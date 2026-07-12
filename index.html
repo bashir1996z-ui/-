@@ -71,10 +71,11 @@
         .action-btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
 
         .result-icon { font-size: 4rem; margin-bottom: 15px; }
-        .result-title { font-size: 2.2rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 10px; }
+        .result-title { font-size: 2.2rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 10px; line-height: 1.6; }
         .student-final-name { font-size: 1.3rem; font-weight: 700; color: var(--text-muted); margin-bottom: 15px; }
         .score-board { background: var(--bg-light); border: 2px dashed var(--primary-color); border-radius: 20px; padding: 20px; max-width: 550px; margin: 0 auto 25px auto; }
-        .final-score { font-size: 1.5rem; font-weight: 800; color: var(--primary-color); }
+        .final-score { font-size: 1.5rem; font-weight: 800; color: var(--primary-color); margin-bottom: 5px; }
+        .final-time { font-size: 1.1rem; font-weight: 700; color: var(--text-muted); }
 
         .leaderboard-section { margin-top: 30px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 18px; padding: 20px; }
         .leaderboard-header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid var(--bg-light); padding-bottom: 10px; }
@@ -151,7 +152,10 @@
             <div id="resultIcon" class="result-icon">🎉</div>
             <h1 id="resultTitle" class="result-title">جاري التقييم...</h1>
             <p id="studentFinalName" class="student-final-name"></p>
-            <div class="score-board"><div id="finalScore" class="final-score"></div></div>
+            <div class="score-board">
+                <div id="finalScore" class="final-score"></div>
+                <div id="finalTime" class="final-time"></div>
+            </div>
 
             <div class="leaderboard-section">
                 <div class="leaderboard-header-container"><h3 class="leaderboard-title">📊 لوحة الصدارة لأفضل 20 ممتحناً</h3></div>
@@ -212,7 +216,7 @@
 
         const quizQuestions = [
             { question: "قال تعالى: (وقل ربي أعوذُ بكَ من همزاتِ الشياطينِ). ما نوع الجمع في كلمة (الشياطين) :", options: ["جمع مذكر سالم", "جمع مؤنث سالم", "جمع تكسير", "مثنى"], correct: 2, points: 2 },
-            { question: "كرَّمَ المديرُ المتفوقينَ، عند بناء الجملة للمجهول تصصبح:", options: ["كُرِمَ المتفوقينَ", "كُرِمَ المتفوقينُ", "كُرِمَ المتفوقانِ", "كُرِمَ المتفوقونَ"], correct: 3, points: 1 },
+            { question: "كرَّمَ المديرُ المتفوقينَ، عند بناء الجملة للمجهول تصبح:", options: ["كُرِمَ المتفوقينَ", "كُرِمَ المتفوقينُ", "كُرِمَ المتفوقانِ", "كُرِمَ المتفوقونَ"], correct: 3, points: 1 },
             { question: "قال تعالى: (وقل ربي أعوذُ بكَ من همزاتِ الشياطينِ). ما اعراب كلمة (الشياطين):", options: ["مفعول به منصوب بالياء", "مضاف اليه مجرور بالياء", "مفعول به منصوب بالفتحة", "مضاف اليه مجرور بالكسرة"], correct: 3, points: 2 },
             { question: "إنَّ القصيدةَ كُتِبتْ في الصفِ.\nنائب الفاعل في الجملة السابقة هو:", options: ["الصف", "ضمير مستتر تقديره (هي)", "التاء المتصلة بالفعل", "لا يوجد نائب فاعل"], correct: 1, points: 1 },
             { question: "قال تعالى: (ولقد أنزلْنَا إليكَ آياتٍ بيناتٍ ومَا يكفرُ بها إلا الفاسقونَ). ما عراب كلمة (آيات):", options: ["مضاف اليه مجرور بالكسرة", "فاعل", "مفعول به", "خبر"], correct: 2, points: 2 },
@@ -245,18 +249,15 @@
                 return; 
             }
             
-            // قفل الزر وتغيير النص مؤقتاً أثناء التحقق السحابي لمنع التكرار
             const btn = document.getElementById('startPlayBtn');
             btn.disabled = true;
             btn.innerHTML = "<span>جاري التحقق من الاسم...</span>";
             
             try {
-                // استعلام سحابي مباشر للتحقق مما إذا كان الاسم مسجلاً مسبقاً في قاعدة البيانات
                 let checkRes = await fetch(`${SHEETDB_API_URL}/search?name=${encodeURIComponent(studentName)}`);
                 let records = await checkRes.json();
                 
                 if (Array.isArray(records) && records.length > 0) {
-                    // الاستثناء للأستاذ بشير حميد (سواء بالهمزة أو بدونها) للسماح له بالدخول دائماً
                     if (studentName !== "الأستاذ بشير حميد" && studentName !== "الاستاذ بشير حميد") {
                         errorElement.innerText = "⚠️ عذراً يا بطل! هذا الاسم قد أدى الامتحان سابقاً، ولا يُسمح بإعادة الاختبار.";
                         errorElement.style.display = "block";
@@ -321,7 +322,6 @@
             });
         }
 
-        // تم تعديل الدالة لتطلق القصاصات دفعة واحدة بدون حلقات تكرارية تسبب الشاشة البيضاء للهواتف
         function triggerSideConfettiEffect() {
             try {
                 confetti({ particleCount: 40, angle: 60, spread: 55, origin: { x: 0, y: 0.7 } });
@@ -379,28 +379,33 @@
             document.getElementById('resultScreen').classList.add('active');
             
             let timeSpentSeconds = (30 * 60) - totalExamTimeSeconds;
+            let finalMinutes = Math.floor(timeSpentSeconds / 60);
+            let finalSeconds = timeSpentSeconds % 60;
+
             document.getElementById('studentFinalName').textContent = `الاسم: ${studentName}`;
             document.getElementById('finalScore').innerHTML = `حصلت على: ${totalScore} من 25 درجة`;
+            document.getElementById('finalTime').innerHTML = `⏱️ الوقت المستغرق: ${finalMinutes} دقيقة و ${finalSeconds} ثانية`;
 
             let titleText = "";
             let iconText = "🎉";
 
+            // إضافة العبارة المطلوبة متبوعة باسم الطالب مباشرة للتقييمات
             if (totalScore === 25) {
-                titleText = "ممتاز ايها البطل الأسطوري 💎"; iconText = "👑"; triggerMegaFinalCelebration();
+                titleText = `عبقري وأسطوري.. أيها البطل والمستكشف الصغير ${studentName} 💎`; iconText = "👑"; triggerMegaFinalCelebration();
             } else if (totalScore === 24) {
-                titleText = "ممتاز أيها البطل الذهبي ⭐"; iconText = "🥇"; triggerMegaFinalCelebration();
+                titleText = `ممتاز جداً.. أيها البطل والمستكشف الصغير ${studentName} ⭐`; iconText = "🥇"; triggerMegaFinalCelebration();
             } else if (totalScore === 23) {
-                titleText = "ممتاز أيها المبدع ✨"; iconText = "🎨";
+                titleText = `ممتاز ومبدع.. أيها البطل والمستكشف الصغير ${studentName} ✨`; iconText = "🎨";
             } else if (totalScore === 22) {
-                titleText = "ممتاز أيها المتميز ⚡"; iconText = "🚀";
+                titleText = `ممتاز ومتميز.. أيها البطل والمستكشف الصغير ${studentName} ⚡`; iconText = "🚀";
             } else if (totalScore === 21) {
-                titleText = "جيد جدًا 👍"; iconText = "📈";
+                titleText = `جيد جدًا 👍 أيها البطل والمستكشف الصغير ${studentName}`; iconText = "📈";
             } else if (totalScore === 20) {
-                titleText = "بداية النجاح 🎯"; iconText = "🌱";
+                titleText = `بداية النجاح 🎯 أيها البطل والمستكشف الصغير ${studentName}`; iconText = "🌱";
             } else if (totalScore >= 16 && totalScore <= 19) {
-                titleText = "جيد، اقتربت من التميّز، حاول الدراسة بشكل مكثف والعودة مرة آخرى 📚"; iconText = "✍️";
+                titleText = `جيد، اقتربت من التميّز يا بطل، حاول الدراسة بشكل مكثف والعودة مرة آخرى 📚`; iconText = "✍️";
             } else {
-                titleText = "حاول مراجعة المادة بصورة صحيحة والعودة مرة أخرى 🔄"; iconText = "💪";
+                titleText = `حاول مراجعة المادة بصورة صحيحة والعودة مرة أخرى يا بطل 🔄`; iconText = "💪";
             }
 
             document.getElementById('resultTitle').textContent = titleText;
