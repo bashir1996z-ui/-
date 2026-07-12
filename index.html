@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الامتحان التحصيلي لمادة اللغة العربية</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #0d9488;     
+            --primary-dark: #0f766e;      
+            --bg-light: #f0fdfa;          
+            --text-dark: #1f2937;          
+            --text-muted: #4b5563;        
+            --card-bg: #ffffff;           
+            --correct-color: #10b981;     
+            --wrong-color: #ef4444;       
+            --telegram-color: #229ED9;
+            --youtube-color: #FF0000;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; position: relative; }
+
+        .container { max-width: 900px; width: 95%; margin: 30px auto; background: #ffffff; padding: 40px 30px; border-radius: 24px; box-shadow: var(--shadow); border: 1px solid rgba(13, 148, 136, 0.08); text-align: center; }
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        .welcome-title { font-size: 2.2rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 15px; }
+        .welcome-desc { color: var(--text-muted); font-size: 1.1rem; line-height: 1.8; max-width: 700px; margin: 0 auto 35px auto; }
+
+        .info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 40px; }
+        .info-card { background: var(--bg-light); border: 1px solid rgba(13, 148, 136, 0.15); border-radius: 16px; padding: 15px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+        .card-icon { font-size: 1.6rem; }
+        .card-label { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+        .card-value { font-size: 0.95rem; color: var(--primary-dark); font-weight: 700; }
+
+        .input-box { border: 2px dashed rgba(13, 148, 136, 0.4); border-radius: 20px; padding: 30px 20px; max-width: 600px; margin: 0 auto 35px auto; }
+        .input-label { font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; }
+        .name-input { width: 100%; max-width: 450px; padding: 12px 20px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 1.05rem; text-align: center; outline: none; transition: var(--transition); }
+        .name-input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15); }
+        .error-msg { color: var(--wrong-color); font-size: 0.95rem; font-weight: 700; margin-top: 10px; display: none; }
+
+        .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background: var(--bg-light); padding: 12px 20px; border-radius: 12px; }
+        .score-box, .progress-text { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); }
+        .timer-box { font-size: 1.1rem; font-weight: 700; color: #ef4444; background-color: #fef2f2; padding: 5px 15px; border-radius: 8px; display: flex; align-items: center; gap: 5px; }
+
+        .progress-container { width: 100%; height: 12px; background-color: #e5e7eb; border-radius: 10px; margin-bottom: 35px; overflow: hidden; }
+        .progress-bar { height: 100%; width: 0%; background-color: var(--primary-color); transition: width 0.4s ease; }
+
+        .question-text { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 15px; text-align: right; border-right: 5px solid var(--primary-color); padding-right: 15px; line-height: 1.7; }
+        .question-badge { display: inline-block; background-color: #e0f2fe; color: #0369a1; font-size: 0.85rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; margin-bottom: 20px; text-align: right; float: right; }
+        
+        .options-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px; clear: both; }
+        .option-btn { background: #ffffff; border: 2px solid #e5e7eb; border-radius: 14px; padding: 20px 25px; font-size: 1.1rem; font-weight: 600; text-align: right; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: var(--transition); }
+        .option-btn.correct { background-color: #ecfdf5 !important; border-color: var(--correct-color) !important; color: var(--correct-color); font-weight: 700; }
+        .option-btn.wrong { background-color: #fef2f2 !important; border-color: var(--wrong-color) !important; color: var(--wrong-color); font-weight: 700; }
+
+        .explanation-box { background-color: #f0fdf4; border: 2px solid #10b981; border-radius: 14px; padding: 15px 20px; color: #14532d; font-size: 1.2rem; font-weight: 800; text-align: center; margin-bottom: 25px; display: none; animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .action-btn { background-color: var(--primary-color); color: #ffffff; border: none; border-radius: 14px; padding: 14px 45px; font-size: 1.2rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 12px; box-shadow: 0 4px 14px rgba(13, 148, 136, 0.3); transition: var(--transition); }
+        .action-btn:hover { background-color: var(--primary-dark); }
+        .action-btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
+
+        .result-icon { font-size: 4rem; margin-bottom: 15px; }
+        .result-title { font-size: 2.2rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 10px; }
+        .student-final-name { font-size: 1.3rem; font-weight: 700; color: var(--text-muted); margin-bottom: 15px; }
+        .score-board { background: var(--bg-light); border: 2px dashed var(--primary-color); border-radius: 20px; padding: 20px; max-width: 550px; margin: 0 auto 25px auto; }
+        .final-score { font-size: 1.5rem; font-weight: 800; color: var(--primary-color); }
+
+        .leaderboard-section { margin-top: 30px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 18px; padding: 20px; }
+        .leaderboard-header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid var(--bg-light); padding-bottom: 10px; }
+        .leaderboard-title { font-size: 1.3rem; font-weight: 800; color: var(--primary-dark); display: flex; align-items: center; gap: 10px; }
+        
+        .table-responsive { width: 100%; overflow-x: auto; max-height: 400px; overflow-y: auto; }
+        .leaderboard-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+        .leaderboard-table th, .leaderboard-table td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #f3f4f6; }
+        .leaderboard-table th { background-color: var(--bg-light); color: var(--primary-dark); font-weight: 700; position: sticky; top: 0; z-index: 10; }
+
+        .danger-btn { background-color: var(--wrong-color); color: white; padding: 8px 16px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+        .danger-btn:hover { background-color: #b91c1c; }
+        
+        .success-btn { background-color: #10b981; color: white; padding: 8px 16px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; }
+        .success-btn:hover { background-color: #059669; }
+
+        .subscribe-notice { margin-top: 35px; font-size: 1.2rem; font-weight: 700; color: var(--primary-dark); }
+        .result-footer-buttons { display: flex; gap: 15px; justify-content: center; margin-top: 15px; flex-wrap: wrap; }
+        .social-btn { text-decoration: none; padding: 14px 30px; border-radius: 16px; color: #ffffff; display: inline-flex; align-items: center; gap: 10px; font-size: 1.1rem; font-weight: 700; min-width: 220px; }
+        .btn-telegram { background-color: var(--telegram-color); }
+        .btn-youtube { background-color: var(--youtube-color); }
+
+        @media (max-width: 768px) {
+            .options-container { grid-template-columns: 1fr; }
+            .info-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="container">
+        
+        <div id="welcomeScreen" class="screen active">
+            <h1 class="welcome-title">مرحبًا بكم في الامتحان التحصيلي لمادة اللغة العربية 💎</h1>
+            <p class="welcome-desc">اختبار نحوي ممتع وشيق بأسئلة مخلوطة ومدمجة. مدة الاختبار نصف ساعة كاملة لجميع الأسئلة تراكمياً. المجموع الكلي: 25 درجة!</p>
+
+            <section class="info-grid">
+                <div class="info-card"><span class="card-icon">📋</span><span class="card-label">الأسئلة</span><span class="card-value">15 سؤالاً</span></div>
+                <div class="info-card"><span class="card-icon">💯</span><span class="card-label">الدرجة الكلية</span><span class="card-value">25 درجة</span></div>
+                <div class="info-card"><span class="card-icon">⏱️</span><span class="card-label">وقت الاختبار</span><span class="card-value">30 دقيقة تراكمي</span></div>
+                <div class="info-card"><span class="card-icon">📅</span><span class="card-label">التاريخ</span><span class="card-value">يوليو 2026م</span></div>
+            </section>
+
+            <section class="input-box">
+                <label for="studentName" class="input-label">✏️ اكتب اسمك الثلاثي باللغة العربية لتبدأ:</label>
+                <input type="text" id="studentName" class="name-input" placeholder="مثال: أحمد محمد علي">
+                <div id="errorMsg" class="error-msg">⚠️ يرجى كتابة الاسم باللغة العربية ومكوناً من 3 كلمات على الأقل!</div>
+            </section>
+
+            <button id="startPlayBtn" class="action-btn"><span>بدء الاختبار</span> <span>◀</span></button>
+        </div>
+
+        <div id="quizScreen" class="screen">
+            <div class="quiz-header">
+                <div class="progress-text">السؤال: <span id="currentQNum">1</span> من 15</div>
+                <div id="timerDisplay" class="timer-box">⏱️ المتبقي: <span id="timeLeft">30:00</span></div>
+                <div class="score-box">الدرجات الحالية: <span id="currentScore">0</span></div>
+            </div>
+            <div class="progress-container"><div id="progressBar" class="progress-bar"></div></div>
+            <div id="questionPointsBadge" class="question-badge">جاري التحميل...</div>
+            <h2 id="questionText" class="question-text">جاري التحميل...</h2>
+            <div id="optionsContainer" class="options-container"></div>
+            
+            <div id="explanationBox" class="explanation-box"></div>
+            
+            <button id="nextQuestionBtn" class="action-btn" disabled><span>السؤال التالي</span> <span>◀</span></button>
+        </div>
+
+        <div id="resultScreen" class="screen">
+            <div id="resultIcon" class="result-icon">🎉</div>
+            <h1 id="resultTitle" class="result-title">جاري التقييم...</h1>
+            <p id="studentFinalName" class="student-final-name"></p>
+            <div class="score-board"><div id="finalScore" class="final-score"></div></div>
+
+            <div class="leaderboard-section">
+                <div class="leaderboard-header-container"><h3 class="leaderboard-title">📊 لوحة الصدارة لأفضل 20 ممتحناً</h3></div>
+                <div class="table-responsive">
+                    <table class="leaderboard-table">
+                        <thead><tr><th>الترتيب</th><th>اسم الطالب</th><th>الدرجة</th><th>الوقت المستغرق</th></tr></thead>
+                        <tbody id="leaderboardBody"><tr><td colspan='4'>جاري تحميل لوحة الأوائل...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <p class="subscribe-notice">🔔 اشترك في قنوات الأستاذ لمزيد من الأسئلة</p>
+            <div class="result-footer-buttons">
+                <a href="https://t.me/sm_3rd" target="_blank" class="social-btn btn-telegram"><i class="fab fa-telegram-plane"></i> قناة التليجرام</a>
+                <a href="https://www.youtube.com/@Bashir_6123" target="_blank" class="social-btn btn-youtube"><i class="fab fa-youtube"></i> قناة اليوتيوب</a>
+            </div>
+        </div>
+
+        <div id="teacherScreen" class="screen">
+            <h2 style="color:#eab308; margin-bottom:15px;"><i class="fas fa-user-shield"></i> لوحة تحكم المعلم الإدارية</h2>
+            <p style="color:var(--text-muted); margin-bottom:25px;">مرحباً بك أستاذ بشير. هنا تتابع السجل الكامل لدرجات طلابك من 25.</p>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                <div style="display:flex; gap:10px;">
+                    <button class="success-btn" onclick="downloadResultsCSV()"><i class="fas fa-file-download"></i> تحميل جميع النتائج كملف Excel/CSV مرتب</button>
+                    <button class="danger-btn" onclick="clearAllData()"><i class="fas fa-trash-alt"></i> تصفير وحذف جميع نتائج الطلاب</button>
+                </div>
+                <button class="action-btn" style="padding:8px 20px; font-size:1rem;" onclick="exitTeacherPanel()">العودة للاختبار ↩</button>
+            </div>
+
+            <div class="table-responsive" style="max-height: 500px;">
+                <table class="leaderboard-table">
+                    <thead><tr><th>الرقم</th><th>اسم الطالب الثلاثي</th><th>الدرجة المسجلة</th><th>الوقت المستغرق</th></tr></thead>
+                    <tbody id="teacherTableBody"><tr><td colspan='4'>جاري جلب سجل الطلاب بالكامل...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // تم ربط الرابط الخاص بك بنجاح
+        const SHEETDB_API_URL = "https://sheetdb.io/api/v1/4yuwdh3dg4tfr";
+        const TEACHER_PASSWORD = "12345"; 
+
+        const encouragingAudio = new Audio("https://assets.mixkit.co/active_storage/sfx/1435/1435-84.wav");
+
+        let globalTimerInterval; 
+        let totalExamTimeSeconds = 30 * 60; 
+        let currentQuestionIndex = 0; 
+        let totalScore = 0; 
+        let studentName = "";
+        let isAnswered = false;
+        let localCachedData = [];
+
+        const quizQuestions = [
+            { question: "قال تعالى: (وقل ربي أعوذُ بكَ من همزاتِ الشياطينِ). ما نوع الجمع في كلمة (الشياطين) :", options: ["جمع مذكر سالم", "جمع مؤنث سالم", "جمع تكسير", "مثنى"], correct: 2, points: 2 },
+            { question: "كرَّمَ المديرُ المتفوقينَ، عند بناء الجملة للمجهول تصبح:", options: ["كُرِمَ المتفوقينَ", "كُرِمَ المتفوقينُ", "كُرِمَ المتفوقانِ", "كُرِمَ المتفوقونَ"], correct: 3, points: 1 },
+            { question: "قال تعالى: (وقل ربي أعوذُ بكَ من همزاتِ الشياطينِ). ما اعراب كلمة (الشياطين):", options: ["مفعول به منصوب بالياء", "مضاف اليه مجرور بالياء", "مفعول به منصوب بالفتحة", "مضاف اليه مجرور بالكسرة"], correct: 3, points: 2 },
+            { question: "إنَّ القصيدةَ كُتِبتْ في الصفِ.\nنائب الفاعل في الجملة السابقة هو:", options: ["الصف", "ضمير مستتر تقديره (هي)", "التاء المتصلة بالفعل", "لا يوجد نائب فاعل"], correct: 1, points: 1 },
+            { question: "قال تعالى: (ولقد أنزلْنَا إليكَ آياتٍ بيناتٍ ومَا يكفرُ بها إلا الفاسقونَ). ما عراب كلمة (آيات):", options: ["مضاف اليه مجرور بالكسرة", "فاعل", "مفعول به", "خبر"], correct: 2, points: 2 },
+            { question: "عاد الطالب إلى البيتِ قبلَ دقيقةٍ وقد حلَّ المساءُ.\nالمفعول فيه ظرف الزمان في الجملة السابقة هو:", options: ["البيت", "دقيقة", "قبل", "المساء"], correct: 2, points: 1 },
+            { question: "قال تعالى: (ولقد أنزلْنَا إليكَ آياتٍ بيناتٍ ومَا يكفرُ بها إلا الفاسقونَ). الاسم النكرة هو:", options: ["انزلنا", "آيات", "يكفر", "لا يوجد نكرة"], correct: 1, points: 2 },
+            { question: "أي الجمل التالية مكتوبة بشكل صحيح؟", options: ["معلمو المدرسةِ حريصونَ", "معلمونَ المدرسةِ حريصون", "معلمون المدرسةِ حريصينَ", "معلمو المدرسةُ حريصون"], correct: 0, points: 1 },
+            { question: "قال الشاعر: ليت ماء الفرات يصبح لي ** أدمعًا في ثراك تنذرفُ ، خبر (ليت) هو:", options: ["يصبحُ", "الفرات", "ماء", "ادمعًا"], correct: 0, points: 2 },
+            { question: "ما جمع كلمة (مَلَكُ)؟", options: ["ملوك", "أملاك", "ملائكة", "ملكوت"], correct: 2, points: 1 },
+            { question: "قال الشاعر: ليت ماء الفرات يصبح لي ** أدمعًأ في ثراك تنذرفُ ، كلمة (ماء) في البيت الشعري:", options: ["نكرة", "معرف بالاضافة", "اسم علم", "معرف بال"], correct: 1, points: 2 },
+            { question: "قال الشاعر: ليت ماء الفرات يصبح لي ** أدمعًأ في ثراك تنذرفُ ، اعراب كلمة (أدمعًا) هو:", options: ["مفعول به", "مضاف اليه", "خبر اصبح", "اسم ليت منصوب"], correct: 2, points: 2 },
+            { question: "في جملة (لسنا مجتهدين) عند حذف الفعل الناقص تصبح الجملة.", options: ["مجتهدون", "نحن مجتهدين", "هم مجتهدين", "نحن مجتهدون"], correct: 3, points: 2 },
+            { question: "قال تعالى: (ودخلَ معه السجنَ فتيانِ) ما اعراب كلمة (فتيان)؟:", options: ["مفعول به", "نائب فاعل", "فاعل", "مضاف اليه"], correct: 2, points: 2 },
+            { question: "قال تعالى: (ودخلَ معه السجنَ فتيانِ) كلمة (فتيان):", options: ["اسم علم", "عرف بالاضافة", "نكرة", "معرف بال"], correct: 2, points: 2 }
+        ];
+
+        function validateArabicName(name) {
+            const arabicRegex = /^[\u0600-\u06FF\s]+$/;
+            if (!arabicRegex.test(name)) return false;
+            const words = name.trim().split(/\s+/);
+            return words.length >= 3;
+        }
+
+        document.getElementById('startPlayBtn').addEventListener('click', function() {
+            studentName = document.getElementById('studentName').value.trim();
+            const errorElement = document.getElementById('errorMsg');
+            if (!validateArabicName(studentName)) { errorElement.style.display = "block"; return; }
+            errorElement.style.display = "none";
+            document.getElementById('welcomeScreen').classList.remove('active');
+            document.getElementById('quizScreen').classList.add('active');
+            initQuiz();
+        });
+
+        function initQuiz() {
+            currentQuestionIndex = 0; totalScore = 0; isAnswered = false;
+            startGlobalTimer(); showQuestion();
+        }
+
+        function startGlobalTimer() {
+            clearInterval(globalTimerInterval);
+            globalTimerInterval = setInterval(() => {
+                totalExamTimeSeconds--; updateTimerDisplay();
+                if (totalExamTimeSeconds <= 0) { clearInterval(globalTimerInterval); showFinalResults(); }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            let minutes = Math.floor(totalExamTimeSeconds / 60);
+            let seconds = totalExamTimeSeconds % 60;
+            document.getElementById('timeLeft').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function showQuestion() {
+            isAnswered = false;
+            document.getElementById('nextQuestionBtn').disabled = true;
+            document.getElementById('explanationBox').style.display = "none";
+            document.getElementById('optionsContainer').innerHTML = "";
+            
+            let currentQ = quizQuestions[currentQuestionIndex];
+            document.getElementById('currentQNum').textContent = currentQuestionIndex + 1;
+            document.getElementById('questionText').innerText = currentQ.question;
+            document.getElementById('progressBar').style.width = ((currentQuestionIndex) / quizQuestions.length) * 100 + "%";
+            
+            const badge = document.getElementById('questionPointsBadge');
+            badge.textContent = currentQ.points === 2 ? "قيمة هذا السؤال: درجتان (2)" : "قيمة هذا السؤال: درجة واحدة (1)";
+            badge.style.backgroundColor = currentQ.points === 2 ? "#e0f2fe" : "#fef3c7";
+            badge.style.color = currentQ.points === 2 ? "#0369a1" : "#b45309";
+
+            currentQ.options.forEach((option, index) => {
+                const button = document.createElement('button'); button.className = 'option-btn';
+                button.innerHTML = `<span>${option}</span>`;
+                button.addEventListener('click', () => { if(!isAnswered) selectOption(button, index); });
+                document.getElementById('optionsContainer').appendChild(button);
+            });
+        }
+
+        function triggerSideConfettiEffect() {
+            var duration = 3 * 1000; var end = Date.now() + duration;
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0, y: 0.7 } });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1, y: 0.7 } });
+                if (Date.now() < end) { requestAnimationFrame(frame); }
+            }());
+        }
+
+        function triggerMegaFinalCelebration() {
+            var end = Date.now() + (6 * 1000);
+            var colors = ['#bb0000', '#ffffff', '#00bb00', '#0000bb', '#facc15'];
+
+            (function frame() {
+              confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
+              confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
+              confetti({ particleCount: 2, angle: 90, spread: 100, origin: { x: 0.5, y: 0.3 } });
+
+              if (Date.now() < end) { requestAnimationFrame(frame); }
+            }());
+        }
+
+        function selectOption(selectedButton, index) {
+            isAnswered = true;
+            let currentQ = quizQuestions[currentQuestionIndex];
+            const allButtons = document.getElementById('optionsContainer').querySelectorAll('.option-btn');
+            allButtons.forEach(btn => btn.disabled = true);
+            
+            if (index === currentQ.correct) {
+                selectedButton.classList.add('correct'); 
+                totalScore += currentQ.points; 
+                document.getElementById('currentScore').textContent = totalScore;
+                
+                try { encouragingAudio.currentTime = 0; encouragingAudio.play(); } catch(e){}
+                triggerSideConfettiEffect();
+                
+                const expBox = document.getElementById('explanationBox');
+                expBox.innerHTML = `🎉 أحسنتَ يا بطل! إجابة صحيحة وموفقة.`;
+                expBox.style.display = "block";
+            } else {
+                selectedButton.classList.add('wrong');
+            }
+            document.getElementById('nextQuestionBtn').disabled = false;
+            document.getElementById('nextQuestionBtn').innerHTML = currentQuestionIndex === quizQuestions.length - 1 ? "إنهاء اللعبة 🎉" : "السؤال التالي ◀";
+        }
+
+        document.getElementById('nextQuestionBtn').addEventListener('click', function() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizQuestions.length) { showQuestion(); } else { showFinalResults(); }
+        });
+
+        async function showFinalResults() {
+            clearInterval(globalTimerInterval);
+            document.getElementById('quizScreen').classList.remove('active');
+            document.getElementById('resultScreen').classList.add('active');
+            
+            let timeSpentSeconds = (30 * 60) - totalExamTimeSeconds;
+            document.getElementById('studentFinalName').textContent = `الاسم: ${studentName}`;
+            document.getElementById('finalScore').innerHTML = `حصلت على: ${totalScore} من 25 درجة`;
+
+            let titleText = "";
+            let iconText = "🎉";
+
+            if (totalScore === 25) {
+                titleText = "ممتاز ايها البطل الأسطوري 💎";
+                iconText = "👑";
+                triggerMegaFinalCelebration();
+            } else if (totalScore === 24) {
+                titleText = "ممتاز أيها البطل الذهبي ⭐";
+                iconText = "🥇";
+                triggerMegaFinalCelebration();
+            } else if (totalScore === 23) {
+                titleText = "ممتاز أيها المبدع ✨";
+                iconText = "🎨";
+            } else if (totalScore === 22) {
+                titleText = "ممتاز أيها المتميز ⚡";
+                iconText = "🚀";
+            } else if (totalScore === 21) {
+                titleText = "جيد جدًا 👍";
+                iconText = "📈";
+            } else if (totalScore === 20) {
+                titleText = "بداية النجاح 🎯";
+                iconText = "🌱";
+            } else if (totalScore >= 16 && totalScore <= 19) {
+                titleText = "جيد، اقتربت من التميّز، حاول الدراسة بشكل مكثف والعودة مرة آخرى 📚";
+                iconText = "✍️";
+            } else {
+                titleText = "حاول مراجعة المادة بصورة صحيحة والعودة مرة أخرى 🔄";
+                iconText = "💪";
+            }
+
+            document.getElementById('resultTitle').textContent = titleText;
+            document.getElementById('resultIcon').textContent = iconText;
+
+            await saveToGoogleSheets(studentName, totalScore, timeSpentSeconds);
+        }
+
+        async function saveToGoogleSheets(name, score, timeSpent) {
+            try {
+                await fetch(SHEETDB_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: [{ name: name, score: score, timeSpent: timeSpent }] })
+                });
+                loadLeaderboardFromGoogleSheets();
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadLeaderboardFromGoogleSheets() {
+            const body = document.getElementById('leaderboardBody');
+            try {
+                let res = await fetch(SHEETDB_API_URL); let data = await res.json();
+                if(!Array.isArray(data)) data = [];
+                data.sort((a,b) => {
+                    if(parseInt(b.score) !== parseInt(a.score)) return (parseInt(b.score)||0) - (parseInt(a.score)||0);
+                    return (parseInt(a.timeSpent)||0) - (parseInt(b.timeSpent)||0);
+                });
+                localCachedData = data; 
+                body.innerHTML = "";
+                data.slice(0, 20).forEach((r, i) => {
+                    let m = Math.floor(r.timeSpent / 60); let s = r.timeSpent % 60;
+                    body.innerHTML += `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.score} / 25</td><td>${m}:${s.toString().padStart(2,'0')} دقيقة</td></tr>`;
+                });
+                if(data.length === 0) body.innerHTML = "<tr><td colspan='4'>لوحة الأوائل فارغة حالياً. كن أول من يسجل!</td></tr>";
+            } catch(e) { body.innerHTML = "<tr><td colspan='4'>خطأ في اتصال السيرفر بقاعدة البيانات</td></tr>"; }
+        }
+
+        function accessTeacherPanel() {
+            let password = prompt("الرجاء إدخال كلمة مرور المعلم السرية:");
+            if (password === TEACHER_PASSWORD) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById('teacherScreen').classList.add('active');
+                loadAllStudentsForTeacher();
+            } else if (password !== null) { alert("كلمة المرور خاطئة!"); }
+        }
+
+        function exitTeacherPanel() {
+            document.getElementById('teacherScreen').classList.remove('active');
+            document.getElementById('welcomeScreen').classList.add('active');
+        }
+
+        async function loadAllStudentsForTeacher() {
+            const body = document.getElementById('teacherTableBody');
+            body.innerHTML = "<tr><td colspan='4'>جاري سحب السجلات من السحابة...</td></tr>";
+            try {
+                let res = await fetch(SHEETDB_API_URL); let data = await res.json();
+                if(!Array.isArray(data)) data = [];
+                
+                data.sort((a,b) => {
+                    if(parseInt(b.score) !== parseInt(a.score)) return (parseInt(b.score)||0) - (parseInt(a.score)||0);
+                    return (parseInt(a.timeSpent)||0) - (parseInt(b.timeSpent)||0);
+                });
+                localCachedData = data; 
+                
+                body.innerHTML = "";
+                data.forEach((r, i) => {
+                    let m = Math.floor(r.timeSpent / 60); let s = r.timeSpent % 60;
+                    body.innerHTML += `<tr><td>${i+1}</td><td><strong>${r.name}</strong></td><td style="color:var(--primary-color); font-weight:bold;">${r.score} / 25</td><td>${m}:${s.toString().padStart(2,'0')} دقيقة</td></tr>`;
+                });
+                if(data.length === 0) body.innerHTML = "<tr><td colspan='4'>لا توجد نتائج مسجلة حتى الآن.</td></tr>";
+            } catch(e) { body.innerHTML = "<tr><td colspan='4'>حدث خطأ أثناء الاتصال بالسيرفر.</td></tr>"; }
+        }
+
+        function downloadResultsCSV() {
+            if(localCachedData.length === 0) { alert("لا توجد بيانات متاحة لتحميلها حالياً!"); return; }
+            
+            let csvContent = "\ufeffالترتيب,اسم الطالب,الدرجة من 25,الوقت المستغرق بالثواني\n";
+            localCachedData.forEach((row, index) => {
+                csvContent += `${index + 1},"${row.name}",${row.score},${row.timeSpent}\n`;
+            });
+            
+            let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            let url = URL.createObjectURL(blob);
+            let link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `نتائج_الامتحان_التحصيلي_${new Date().toLocaleDateString('ar-EG')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        async function clearAllData() {
+            if(confirm("⚠️ هل أنت متأكد من رغبتك في حذف وتصفير جميع نتائج الطلاب نهائياً من قاعدة البيانات وجدول جوجل؟")) {
+                try {
+                    await fetch(`${SHEETDB_API_URL}/all`, { method: 'DELETE' });
+                    alert("تم تصفير لوحة النتائج بنجاح!"); localCachedData = [];
+                    loadAllStudentsForTeacher();
+                } catch(e) { alert("فشل المسح التلقائي."); }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => { loadLeaderboardFromGoogleSheets(); });
+    </script>
+</body>
+</html>
