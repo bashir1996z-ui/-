@@ -6,7 +6,7 @@
     <title>الامتحان التحصيلي لمادة اللغة العربية</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
@@ -46,7 +46,7 @@
         .input-label { font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; }
         .name-input { width: 100%; max-width: 450px; padding: 12px 20px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 1.05rem; text-align: center; outline: none; transition: var(--transition); }
         .name-input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15); }
-        .error-msg { color: var(--wrong-color); font-size: 0.95rem; font-weight: 700; margin-top: 10px; display: none; }
+        .error-msg { color: var(--wrong-color); font-size: 0.95rem; font-weight: 700; margin-top: 10px; display: none; line-height: 1.6; }
 
         .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background: var(--bg-light); padding: 12px 20px; border-radius: 12px; }
         .score-box, .progress-text { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); }
@@ -198,7 +198,6 @@
 
     <script>
         const SHEETDB_API_URL = "https://sheetdb.io/api/v1/4yuwdh3dg4tfr";
-        // تم تعديل كلمة المرور بناءً على طلبك
         const TEACHER_PASSWORD = "19961996"; 
 
         const encouragingAudio = new Audio("https://assets.mixkit.co/active_storage/sfx/1435/1435-84.wav");
@@ -236,11 +235,41 @@
             return words.length >= 3;
         }
 
-        document.getElementById('startPlayBtn').addEventListener('click', function() {
+        document.getElementById('startPlayBtn').addEventListener('click', async function() {
             studentName = document.getElementById('studentName').value.trim();
             const errorElement = document.getElementById('errorMsg');
-            if (!validateArabicName(studentName)) { errorElement.style.display = "block"; return; }
+            
+            if (!validateArabicName(studentName)) { 
+                errorElement.innerText = "⚠️ يرجى كتابة الاسم باللغة العربية ومكوناً من 3 كلمات على الأقل!";
+                errorElement.style.display = "block"; 
+                return; 
+            }
+            
+            // قفل الزر وتغيير النص مؤقتاً أثناء التحقق السحابي لمنع التكرار
+            const btn = document.getElementById('startPlayBtn');
+            btn.disabled = true;
+            btn.innerHTML = "<span>جاري التحقق من الاسم...</span>";
+            
+            try {
+                // استعلام سحابي مباشر للتحقق مما إذا كان الاسم مسجلاً مسبقاً في قاعدة البيانات
+                let checkRes = await fetch(`${SHEETDB_API_URL}/search?name=${encodeURIComponent(studentName)}`);
+                let records = await checkRes.json();
+                
+                if (Array.isArray(records) && records.length > 0) {
+                    errorElement.innerText = "⚠️ عذراً يا بطل! هذا الاسم قد أدى الامتحان سابقاً، ولا يُسمح بإعادة الاختبار.";
+                    errorElement.style.display = "block";
+                    btn.disabled = false;
+                    btn.innerHTML = "<span>بدء الاختبار</span> <span>◀</span>";
+                    return;
+                }
+            } catch (e) {
+                console.error("خطأ أثناء التحقق السحابي:", e);
+            }
+            
             errorElement.style.display = "none";
+            btn.disabled = false;
+            btn.innerHTML = "<span>بدء الاختبار</span> <span>◀</span>";
+            
             document.getElementById('welcomeScreen').classList.remove('active');
             document.getElementById('quizScreen').classList.add('active');
             initQuiz();
