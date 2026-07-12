@@ -91,6 +91,10 @@
         .success-btn { background-color: #10b981; color: white; padding: 8px 16px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; }
         .success-btn:hover { background-color: #059669; }
 
+        .teacher-access-container { margin-top: 25px; padding-top: 20px; border-top: 1px dashed #e5e7eb; }
+        .teacher-link-btn { background: none; border: none; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; cursor: pointer; text-decoration: underline; transition: var(--transition); }
+        .teacher-link-btn:hover { color: var(--primary-dark); }
+
         .subscribe-notice { margin-top: 35px; font-size: 1.2rem; font-weight: 700; color: var(--primary-dark); }
         .result-footer-buttons { display: flex; gap: 15px; justify-content: center; margin-top: 15px; flex-wrap: wrap; }
         .social-btn { text-decoration: none; padding: 14px 30px; border-radius: 16px; color: #ffffff; display: inline-flex; align-items: center; gap: 10px; font-size: 1.1rem; font-weight: 700; min-width: 220px; }
@@ -109,7 +113,7 @@
         
         <div id="welcomeScreen" class="screen active">
             <h1 class="welcome-title">مرحبًا بكم في الامتحان التحصيلي لمادة اللغة العربية 💎</h1>
-            <p class="welcome-desc">اختبار نحوي ممتع وشيق بأسئلة مخلوطة ومدمجة. مدة الاختبار نصف ساعة كاملة لجميع الأسئلة تراكمياً. المجموع الكلي: 25 درجة!</p>
+            <p class="welcome-desc">اختبار تحصيلي مكثف. مدة الاختبار نصف ساعة. المجموع الكلي: 25 درجة!</p>
 
             <section class="info-grid">
                 <div class="info-card"><span class="card-icon">📋</span><span class="card-label">الأسئلة</span><span class="card-value">15 سؤالاً</span></div>
@@ -157,9 +161,13 @@
                         <tbody id="leaderboardBody"><tr><td colspan='4'>جاري تحميل لوحة الأوائل...</td></tr></tbody>
                     </table>
                 </div>
+
+                <div class="teacher-access-container">
+                    <button class="teacher-link-btn" onclick="accessTeacherPanel()">🔐 الدخول للوحة تحكم المعلم (خاص بالأستاذ بشير)</button>
+                </div>
             </div>
 
-            <p class="subscribe-notice">🔔 اشترك في قنوات الأستاذ لمزيد من الأسئلة</p>
+            <p class="subscribe-notice">🔔 اشترك في قنوات الأستاذ لمزيد من الأسئلة التحصيلية</p>
             <div class="result-footer-buttons">
                 <a href="https://t.me/sm_3rd" target="_blank" class="social-btn btn-telegram"><i class="fab fa-telegram-plane"></i> قناة التليجرام</a>
                 <a href="https://www.youtube.com/@Bashir_6123" target="_blank" class="social-btn btn-youtube"><i class="fab fa-youtube"></i> قناة اليوتيوب</a>
@@ -175,7 +183,7 @@
                     <button class="success-btn" onclick="downloadResultsCSV()"><i class="fas fa-file-download"></i> تحميل جميع النتائج كملف Excel/CSV مرتب</button>
                     <button class="danger-btn" onclick="clearAllData()"><i class="fas fa-trash-alt"></i> تصفير وحذف جميع نتائج الطلاب</button>
                 </div>
-                <button class="action-btn" style="padding:8px 20px; font-size:1rem;" onclick="exitTeacherPanel()">العودة للاختبار ↩</button>
+                <button class="action-btn" style="padding:8px 20px; font-size:1rem;" onclick="exitTeacherPanel()">العودة للوحة الأوائل ↩</button>
             </div>
 
             <div class="table-responsive" style="max-height: 500px;">
@@ -189,9 +197,9 @@
     </main>
 
     <script>
-        // تم ربط الرابط الخاص بك بنجاح
         const SHEETDB_API_URL = "https://sheetdb.io/api/v1/4yuwdh3dg4tfr";
-        const TEACHER_PASSWORD = "12345"; 
+        // تم تعديل كلمة المرور بناءً على طلبك
+        const TEACHER_PASSWORD = "19961996"; 
 
         const encouragingAudio = new Audio("https://assets.mixkit.co/active_storage/sfx/1435/1435-84.wav");
 
@@ -345,31 +353,21 @@
             let iconText = "🎉";
 
             if (totalScore === 25) {
-                titleText = "ممتاز ايها البطل الأسطوري 💎";
-                iconText = "👑";
-                triggerMegaFinalCelebration();
+                titleText = "ممتاز ايها البطل الأسطوري 💎"; iconText = "👑"; triggerMegaFinalCelebration();
             } else if (totalScore === 24) {
-                titleText = "ممتاز أيها البطل الذهبي ⭐";
-                iconText = "🥇";
-                triggerMegaFinalCelebration();
+                titleText = "ممتاز أيها البطل الذهبي ⭐"; iconText = "🥇"; triggerMegaFinalCelebration();
             } else if (totalScore === 23) {
-                titleText = "ممتاز أيها المبدع ✨";
-                iconText = "🎨";
+                titleText = "ممتاز أيها المبدع ✨"; iconText = "🎨";
             } else if (totalScore === 22) {
-                titleText = "ممتاز أيها المتميز ⚡";
-                iconText = "🚀";
+                titleText = "ممتاز أيها المتميز ⚡"; iconText = "🚀";
             } else if (totalScore === 21) {
-                titleText = "جيد جدًا 👍";
-                iconText = "📈";
+                titleText = "جيد جدًا 👍"; iconText = "📈";
             } else if (totalScore === 20) {
-                titleText = "بداية النجاح 🎯";
-                iconText = "🌱";
+                titleText = "بداية النجاح 🎯"; iconText = "🌱";
             } else if (totalScore >= 16 && totalScore <= 19) {
-                titleText = "جيد، اقتربت من التميّز، حاول الدراسة بشكل مكثف والعودة مرة آخرى 📚";
-                iconText = "✍️";
+                titleText = "جيد، اقتربت من التميّز، حاول الدراسة بشكل مكثف والعودة مرة آخرى 📚"; iconText = "✍️";
             } else {
-                titleText = "حاول مراجعة المادة بصورة صحيحة والعودة مرة أخرى 🔄";
-                iconText = "💪";
+                titleText = "حاول مراجعة المادة بصورة صحيحة والعودة مرة أخرى 🔄"; iconText = "💪";
             }
 
             document.getElementById('resultTitle').textContent = titleText;
@@ -409,9 +407,9 @@
         }
 
         function accessTeacherPanel() {
-            let password = prompt("الرجاء إدخال كلمة مرور المعلم السرية:");
+            let password = prompt("الرجاء إدخال كلمة مرور المعلم السرية المحدثة:");
             if (password === TEACHER_PASSWORD) {
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById('resultScreen').classList.remove('active');
                 document.getElementById('teacherScreen').classList.add('active');
                 loadAllStudentsForTeacher();
             } else if (password !== null) { alert("كلمة المرور خاطئة!"); }
@@ -419,7 +417,8 @@
 
         function exitTeacherPanel() {
             document.getElementById('teacherScreen').classList.remove('active');
-            document.getElementById('welcomeScreen').classList.add('active');
+            document.getElementById('resultScreen').classList.add('active');
+            loadLeaderboardFromGoogleSheets();
         }
 
         async function loadAllStudentsForTeacher() {
