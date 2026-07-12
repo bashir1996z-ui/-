@@ -46,7 +46,7 @@
         .input-label { font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; }
         .name-input { width: 100%; max-width: 450px; padding: 12px 20px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 1.05rem; text-align: center; outline: none; transition: var(--transition); }
         .name-input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15); }
-        .error-msg { color: var(--wrong-color); font-size: 0.95rem; font-weight: 700; margin-top: 10px; display: none; }
+        .error-msg { color: var(--wrong-color); font-size: 0.95rem; font-weight: 700; margin-top: 10px; display: none; line-height: 1.6; }
 
         .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background: var(--bg-light); padding: 12px 20px; border-radius: 12px; }
         .score-box, .progress-text { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); }
@@ -70,10 +70,11 @@
         .action-btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
 
         .result-icon { font-size: 4rem; margin-bottom: 15px; }
-        .result-title { font-size: 2.2rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 10px; }
+        .result-title { font-size: 2.2rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 10px; line-height: 1.6; }
         .student-final-name { font-size: 1.3rem; font-weight: 700; color: var(--text-muted); margin-bottom: 15px; }
         .score-board { background: var(--bg-light); border: 2px dashed var(--primary-color); border-radius: 20px; padding: 20px; max-width: 550px; margin: 0 auto 25px auto; }
-        .final-score { font-size: 1.5rem; font-weight: 800; color: var(--primary-color); }
+        .final-score { font-size: 1.5rem; font-weight: 800; color: var(--primary-color); margin-bottom: 5px; }
+        .final-time { font-size: 1.1rem; font-weight: 700; color: var(--text-muted); }
 
         .leaderboard-section { margin-top: 30px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 18px; padding: 20px; }
         .leaderboard-title { font-size: 1.3rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 15px; }
@@ -101,7 +102,7 @@
         <!-- شاشة الترحيب -->
         <div id="welcomeScreen" class="screen active">
             <h1 class="welcome-title">مرحبًا بكم في الامتحان التحصيلي لمادة اللغة العربية 💎</h1>
-            <p class="welcome-desc">اختبار تحصيلي مكثف. مدة الاختبار نصف ساعة. المجموع الكلي: 25 درجة!</p>
+            <p class="welcome-desc">اختبار تحصيلي مكثف ومجاني تماماً للأستاذ القدير بشير حميد!</p>
 
             <section class="info-grid">
                 <div class="info-card"><span class="card-icon">📋</span><span class="card-label">الأسئلة</span><span class="card-value">15 سؤالاً</span></div>
@@ -139,7 +140,10 @@
             <div id="resultIcon" class="result-icon">🎉</div>
             <h1 id="resultTitle" class="result-title">انتهى الامتحان!</h1>
             <p id="studentFinalName" class="student-final-name"></p>
-            <div class="score-board"><div id="finalScore" class="final-score"></div></div>
+            <div class="score-board">
+                <div id="finalScore" class="final-score"></div>
+                <div id="finalTime" class="final-time"></div>
+            </div>
 
             <div class="leaderboard-section">
                 <h3 class="leaderboard-title">📊 لوحة الأوائل (أفضل 20 طالب)</h3>
@@ -164,7 +168,6 @@
         <div id="teacherScreen" class="screen">
             <h2>لوحة تحكم الأستاذ بشير</h2>
             <div style="margin: 20px 0;">
-                <button class="danger-btn" onclick="clearAllData()">🗑️ حذف جميع النتائج وتصفير الجدول</button>
                 <button class="action-btn" onclick="location.reload()">العودة للرئيسية ↩</button>
             </div>
             <div class="table-responsive">
@@ -177,8 +180,8 @@
     </main>
 
     <script>
-        // رابط الـ API من SheetDB
-        const SHEETDB_API_URL = "https://sheetdb.io/api/v1/4yuwdh3dg4tfr";
+        // تنبيه هام جداً: استبدل هذا الرابط برابط "تطبيق الويب" (Web App URL) الذي نسخته من جوجل بعد نشر الـ Script
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzHVYiJ6_8aUOtTPMip-0I0YltD47VpMifexyzhL-CLhKLHFUoKfof0vh8qEAYg0pcWNw/exec";
         const TEACHER_PASSWORD = "19961996";
 
         let currentQuestionIndex = 0;
@@ -186,6 +189,8 @@
         let timeLeft = 30 * 60;
         let timerInterval;
         let studentName = "";
+
+        const encouragingAudio = new Audio("https://assets.mixkit.co/active_storage/sfx/1435/1435-84.wav");
 
         const quizQuestions = [
             { question: "قال تعالى: (وقل ربي أعوذُ بكَ من همزاتِ الشياطينِ). ما نوع الجمع في كلمة (الشياطين) :", options: ["جمع مذكر سالم", "جمع مؤنث سالم", "جمع تكسير", "مثنى"], correct: 2, points: 2 },
@@ -205,12 +210,45 @@
             { question: "قال تعالى: (ودخلَ معه السجنَ فتيانِ) كلمة (فتيان):", options: ["اسم علم", "عرف بالاضافة", "نكرة", "معرف بال"], correct: 2, points: 2 }
         ];
 
-        document.getElementById('startPlayBtn').addEventListener('click', () => {
+        document.getElementById('startPlayBtn').addEventListener('click', async () => {
             studentName = document.getElementById('studentName').value.trim();
+            const errorElement = document.getElementById('errorMsg');
+
             if (studentName.split(" ").length < 3) {
-                document.getElementById('errorMsg').style.display = "block";
+                errorElement.innerText = "⚠️ يرجى كتابة الاسم الثلاثي باللغة العربية.";
+                errorElement.style.display = "block";
                 return;
             }
+
+            const btn = document.getElementById('startPlayBtn');
+            btn.disabled = true;
+            btn.innerHTML = "<span>جاري التحقق من الاسم...</span>";
+
+            try {
+                if (studentName === "الأستاذ بشير حميد" || studentName === "الاستاذ بشير حميد") {
+                    // مسموح له بالعبور دائماً
+                } else {
+                    let checkRes = await fetch(GOOGLE_SCRIPT_URL);
+                    if (checkRes.ok) {
+                        let records = await checkRes.json();
+                        let found = records.some(r => r.name.trim() === studentName);
+                        if (found) {
+                            errorElement.innerText = "⚠️ عذراً يا بطل! هذا الاسم قد أدى الامتحان سابقاً، ولا يُسمح بإعادة الاختبار.";
+                            errorElement.style.display = "block";
+                            btn.disabled = false;
+                            btn.innerHTML = "بدء الاختبار ◀";
+                            return;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error("خطأ أثناء التحقق:", e);
+            }
+
+            errorElement.style.display = "none";
+            btn.disabled = false;
+            btn.innerHTML = "بدء الاختبار ◀";
+
             document.getElementById('welcomeScreen').classList.remove('active');
             document.getElementById('quizScreen').classList.add('active');
             startTimer();
@@ -260,12 +298,35 @@
                 btn.classList.add('correct');
                 totalScore += q.points;
                 document.getElementById('currentScore').textContent = totalScore;
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                try { encouragingAudio.currentTime = 0; encouragingAudio.play(); } catch(e){}
+                triggerSideConfettiEffect();
             } else {
                 btn.classList.add('wrong');
                 allBtns[q.correct].classList.add('correct');
             }
             document.getElementById('nextQuestionBtn').disabled = false;
+        }
+
+        function triggerSideConfettiEffect() {
+            try {
+                confetti({ particleCount: 35, angle: 60, spread: 55, origin: { x: 0, y: 0.7 } });
+                confetti({ particleCount: 35, angle: 120, spread: 55, origin: { x: 1, y: 0.7 } });
+            } catch (e) {
+                console.error("Confetti error:", e);
+            }
+        }
+
+        function triggerMegaFinalCelebration() {
+            var end = Date.now() + (5 * 1000);
+            var colors = ['#bb0000', '#ffffff', '#00bb00', '#0000bb', '#facc15'];
+
+            (function frame() {
+               confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
+               confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
+               confetti({ particleCount: 2, angle: 90, spread: 100, origin: { x: 0.5, y: 0.3 } });
+
+               if (Date.now() < end) { requestAnimationFrame(frame); }
+            }());
         }
 
         document.getElementById('nextQuestionBtn').onclick = () => {
@@ -281,53 +342,85 @@
             clearInterval(timerInterval);
             document.getElementById('quizScreen').classList.remove('active');
             document.getElementById('resultScreen').classList.add('active');
-            document.getElementById('studentFinalName').textContent = studentName;
+            document.getElementById('studentFinalName').textContent = `الاسم: ${studentName}`;
             document.getElementById('finalScore').textContent = `درجتك هي: ${totalScore} من 25`;
 
             let timeTaken = (30 * 60) - timeLeft;
+            let finalMinutes = Math.floor(timeTaken / 60);
+            let finalSeconds = timeTaken % 60;
+            document.getElementById('finalTime').textContent = `⏱️ الوقت المستغرق: ${finalMinutes} دقيقة و ${finalSeconds} ثانية`;
+
+            let titleText = "";
+            let iconText = "🎉";
+
+            if (totalScore === 25) {
+                titleText = `عبقري وأسطوري.. أيها البطل والمستكشف الصغير ${studentName} 💎`; iconText = "👑"; triggerMegaFinalCelebration();
+            } else if (totalScore === 24) {
+                titleText = `ممتاز جداً.. أيها البطل والمستكشف الصغير ${studentName} ⭐`; iconText = "🥇"; triggerMegaFinalCelebration();
+            } else if (totalScore === 23) {
+                titleText = `ممتاز ومبدع.. أيها البطل والمستكشف الصغير ${studentName} ✨`; iconText = "🎨";
+            } else if (totalScore === 22) {
+                titleText = `ممتاز ومتميز.. أيها البطل والمستكشف الصغير ${studentName} ⚡`; iconText = "🚀";
+            } else if (totalScore === 21) {
+                titleText = `جيد جدًا 👍 أيها البطل والمستكشف الصغير ${studentName}`; iconText = "📈";
+            } else if (totalScore === 20) {
+                titleText = `بداية النجاح 🎯 أيها البطل والمستكشف الصغير ${studentName}`; iconText = "🌱";
+            } else if (totalScore >= 16 && totalScore <= 19) {
+                titleText = `جيد، اقتربت من التميّز يا بطل، حاول الدراسة بشكل مكثف والعودة مرة آخرى 📚`; iconText = "✍️";
+            } else {
+                titleText = `حاول مراجعة المادة بصورة صحيحة والعودة مرة أخرى يا بطل 🔄`; iconText = "💪";
+            }
+
+            document.getElementById('resultTitle').textContent = titleText;
+            document.getElementById('resultIcon').textContent = iconText;
+
             await saveToSheet(studentName, totalScore, timeTaken);
             loadLeaderboard();
         }
 
         async function saveToSheet(name, score, time) {
             try {
-                const response = await fetch(SHEETDB_API_URL, {
+                // إرسال البيانات كـ text/plain لتفادي مشاكل الـ CORS مع جوجل
+                await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify({
-                        data: [{
-                            "name": name,
-                            "score": score,
-                            "timeSpent": time
-                        }]
+                        "name": name,
+                        "score": score,
+                        "timeSpent": time
                     })
                 });
-                if(response.ok) {
-                    console.log("تم حفظ البيانات بنجاح في Google Sheet");
-                }
+                console.log("تم إرسال البيانات بنجاح إلى Google Sheets");
             } catch (error) {
-                console.error("خطأ في حفظ البيانات:", error);
+                console.error("خطأ في حفظ البيانات السحابية:", error);
             }
         }
 
         async function loadLeaderboard() {
             const body = document.getElementById('leaderboardBody');
-            body.innerHTML = "<tr><td colspan='4'>جاري تحميل الأوائل...</td></tr>";
+            body.innerHTML = "<tr><td colspan='4'>جاري تحميل الأوائل من جوجل شيت...</td></tr>";
             try {
-                const res = await fetch(SHEETDB_API_URL);
+                const res = await fetch(GOOGLE_SCRIPT_URL);
+                if (!res.ok) {
+                    throw new Error("فشل الاتصال");
+                }
                 let data = await res.json();
+                if (!Array.isArray(data)) data = [];
                 
-                // ترتيب حسب الدرجة ثم الوقت
+                // الترتيب: الدرجة الأعلى أولاً، وعند التساوي الترتيب حسب الوقت الأقل
                 data.sort((a, b) => b.score - a.score || a.timeSpent - b.timeSpent);
                 
                 body.innerHTML = "";
                 data.slice(0, 20).forEach((row, i) => {
                     let mins = Math.floor(row.timeSpent / 60);
                     let secs = row.timeSpent % 60;
-                    body.innerHTML += `<tr><td>${i+1}</td><td>${row.name}</td><td>${row.score}</td><td>${mins}:${secs.toString().padStart(2,'0')}</td></tr>`;
+                    body.innerHTML += `<tr><td>${i+1}</td><td>${row.name}</td><td>${row.score} / 25</td><td>${mins}:${secs.toString().padStart(2,'0')} دقيقة</td></tr>`;
                 });
+                if(data.length === 0) body.innerHTML = "<tr><td colspan='4'>لوحة الأوائل فارغة حالياً. كن أول من يسجل!</td></tr>";
             } catch (e) {
-                body.innerHTML = "<tr><td colspan='4'>خطأ في جلب البيانات</td></tr>";
+                console.error("خطأ في جلب بيانات الأوائل:", e);
+                body.innerHTML = "<tr><td colspan='4' style='color:red;'>⚠️ تنبيه: تعذر تحميل لوحة الأوائل. يرجى التأكد من نشر الـ Script بشكل صحيح أو جرب تنشيط الصفحة.</td></tr>";
             }
         }
 
@@ -337,33 +430,29 @@
                 document.getElementById('resultScreen').classList.remove('active');
                 document.getElementById('teacherScreen').classList.add('active');
                 
-                const res = await fetch(SHEETDB_API_URL);
-                const data = await res.json();
                 const tbody = document.getElementById('teacherTableBody');
-                tbody.innerHTML = "";
-                data.forEach(row => {
-                    let mins = Math.floor(row.timeSpent / 60);
-                    let secs = row.timeSpent % 60;
-                    tbody.innerHTML += `<tr><td>${row.name}</td><td>${row.score}</td><td>${mins}:${secs.toString().padStart(2,'0')}</td></tr>`;
-                });
+                tbody.innerHTML = "<tr><td colspan='3'>جاري تحميل سجل المعلم...</td></tr>";
+                
+                try {
+                    const res = await fetch(GOOGLE_SCRIPT_URL);
+                    const data = await res.json();
+                    tbody.innerHTML = "";
+                    data.forEach(row => {
+                        let mins = Math.floor(row.timeSpent / 60);
+                        let secs = row.timeSpent % 60;
+                        tbody.innerHTML += `<tr><td><strong>${row.name}</strong></td><td style="color:var(--primary-color); font-weight:bold;">${row.score} / 25</td><td>${mins}:${secs.toString().padStart(2,'0')} دقيقة</td></tr>`;
+                    });
+                    if (data.length === 0) {
+                        tbody.innerHTML = "<tr><td colspan='3'>لا توجد سجلات بعد.</td></tr>";
+                    }
+                } catch (err) {
+                    tbody.innerHTML = "<tr><td colspan='3' style='color:red;'>خطأ في جلب سجل البيانات.</td></tr>";
+                }
             } else {
                 alert("كلمة مرور خاطئة!");
             }
         }
 
-        async function clearAllData() {
-            if(confirm("هل أنت متأكد من حذف جميع بيانات الطلاب نهائياً؟")) {
-                try {
-                    await fetch(SHEETDB_API_URL + "/all", { method: 'DELETE' });
-                    alert("تم مسح البيانات بنجاح.");
-                    location.reload();
-                } catch(e) {
-                    alert("حدث خطأ أثناء المسح.");
-                }
-            }
-        }
-
-        // تحميل الأوائل عند فتح الصفحة
         window.onload = loadLeaderboard;
     </script>
 </body>
