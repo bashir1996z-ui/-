@@ -17,7 +17,7 @@
             --bg-light: #f0fdfa;          
             --text-dark: #1f2937;          
             --text-muted: #4b5563;        
-            --card-bg: #ffffff;           
+            --card-bg: #ffffff;            
             --correct-color: #10b981;     
             --wrong-color: #ef4444;       
             --telegram-color: #229ED9;
@@ -112,7 +112,7 @@
     <main class="container">
         
         <div id="welcomeScreen" class="screen active">
-            <h1 class="welcome-title">مرحبًا بكم في الامتحان التحصيلي لمادة اللغة العربية 💎</h1>
+            <h1 class="welcome-title">مرحباً بكم في الامتحان التحصيلي لمادة اللغة العربية 💎</h1>
             <p class="welcome-desc">اختبار تحصيلي مكثف. مدة الاختبار نصف ساعة. المجموع الكلي: 25 درجة!</p>
 
             <section class="info-grid">
@@ -212,7 +212,7 @@
 
         const quizQuestions = [
             { question: "قال تعالى: (وقل ربي أعوذُ بكَ من همزاتِ الشياطينِ). ما نوع الجمع في كلمة (الشياطين) :", options: ["جمع مذكر سالم", "جمع مؤنث سالم", "جمع تكسير", "مثنى"], correct: 2, points: 2 },
-            { question: "كرَّمَ المديرُ المتفوقينَ، عند بناء الجملة للمجهول تصبح:", options: ["كُرِمَ المتفوقينَ", "كُرِمَ المتفوقينُ", "كُرِمَ المتفوقانِ", "كُرِمَ المتفوقونَ"], correct: 3, points: 1 },
+            { question: "كرَّمَ المديرُ المتفوقينَ، عند بناء الجملة للمجهول تصصبح:", options: ["كُرِمَ المتفوقينَ", "كُرِمَ المتفوقينُ", "كُرِمَ المتفوقانِ", "كُرِمَ المتفوقونَ"], correct: 3, points: 1 },
             { question: "قال تعالى: (وقل ربي أعوذُ بكَ من همزاتِ الشياطينِ). ما اعراب كلمة (الشياطين):", options: ["مفعول به منصوب بالياء", "مضاف اليه مجرور بالياء", "مفعول به منصوب بالفتحة", "مضاف اليه مجرور بالكسرة"], correct: 3, points: 2 },
             { question: "إنَّ القصيدةَ كُتِبتْ في الصفِ.\nنائب الفاعل في الجملة السابقة هو:", options: ["الصف", "ضمير مستتر تقديره (هي)", "التاء المتصلة بالفعل", "لا يوجد نائب فاعل"], correct: 1, points: 1 },
             { question: "قال تعالى: (ولقد أنزلْنَا إليكَ آياتٍ بيناتٍ ومَا يكفرُ بها إلا الفاسقونَ). ما عراب كلمة (آيات):", options: ["مضاف اليه مجرور بالكسرة", "فاعل", "مفعول به", "خبر"], correct: 2, points: 2 },
@@ -256,11 +256,14 @@
                 let records = await checkRes.json();
                 
                 if (Array.isArray(records) && records.length > 0) {
-                    errorElement.innerText = "⚠️ عذراً يا بطل! هذا الاسم قد أدى الامتحان سابقاً، ولا يُسمح بإعادة الاختبار.";
-                    errorElement.style.display = "block";
-                    btn.disabled = false;
-                    btn.innerHTML = "<span>بدء الاختبار</span> <span>◀</span>";
-                    return;
+                    // الاستثناء للأستاذ بشير حميد (سواء بالهمزة أو بدونها) للسماح له بالدخول دائماً
+                    if (studentName !== "الأستاذ بشير حميد" && studentName !== "الاستاذ بشير حميد") {
+                        errorElement.innerText = "⚠️ عذراً يا بطل! هذا الاسم قد أدى الامتحان سابقاً، ولا يُسمح بإعادة الاختبار.";
+                        errorElement.style.display = "block";
+                        btn.disabled = false;
+                        btn.innerHTML = "<span>بدء الاختبار</span> <span>◀</span>";
+                        return;
+                    }
                 }
             } catch (e) {
                 console.error("خطأ أثناء التحقق السحابي:", e);
@@ -318,13 +321,14 @@
             });
         }
 
+        // تم تعديل الدالة لتطلق القصاصات دفعة واحدة بدون حلقات تكرارية تسبب الشاشة البيضاء للهواتف
         function triggerSideConfettiEffect() {
-            var duration = 3 * 1000; var end = Date.now() + duration;
-            (function frame() {
-                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0, y: 0.7 } });
-                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1, y: 0.7 } });
-                if (Date.now() < end) { requestAnimationFrame(frame); }
-            }());
+            try {
+                confetti({ particleCount: 40, angle: 60, spread: 55, origin: { x: 0, y: 0.7 } });
+                confetti({ particleCount: 40, angle: 120, spread: 55, origin: { x: 1, y: 0.7 } });
+            } catch (e) {
+                console.error("Confetti error:", e);
+            }
         }
 
         function triggerMegaFinalCelebration() {
@@ -332,11 +336,11 @@
             var colors = ['#bb0000', '#ffffff', '#00bb00', '#0000bb', '#facc15'];
 
             (function frame() {
-              confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
-              confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
-              confetti({ particleCount: 2, angle: 90, spread: 100, origin: { x: 0.5, y: 0.3 } });
+               confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
+               confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
+               confetti({ particleCount: 2, angle: 90, spread: 100, origin: { x: 0.5, y: 0.3 } });
 
-              if (Date.now() < end) { requestAnimationFrame(frame); }
+               if (Date.now() < end) { requestAnimationFrame(frame); }
             }());
         }
 
@@ -489,18 +493,6 @@
             link.click();
             document.body.removeChild(link);
         }
-
-        async function clearAllData() {
-            if(confirm("⚠️ هل أنت متأكد من رغبتك في حذف وتصفير جميع نتائج الطلاب نهائياً من قاعدة البيانات وجدول جوجل؟")) {
-                try {
-                    await fetch(`${SHEETDB_API_URL}/all`, { method: 'DELETE' });
-                    alert("تم تصفير لوحة النتائج بنجاح!"); localCachedData = [];
-                    loadAllStudentsForTeacher();
-                } catch(e) { alert("فشل المسح التلقائي."); }
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', () => { loadLeaderboardFromGoogleSheets(); });
     </script>
 </body>
 </html>
