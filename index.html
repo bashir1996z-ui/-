@@ -91,7 +91,6 @@
         .btn-telegram { background-color: var(--telegram-color); }
         .btn-youtube { background-color: var(--youtube-color); }
 
-        /* Teacher Screen Styles */
         #teacherScreen table { width: 100%; margin-top: 20px; }
         .danger-btn { background-color: var(--wrong-color); color: white; padding: 10px 20px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
     </style>
@@ -180,7 +179,6 @@
     </main>
 
     <script>
-        // تنبيه هام جداً: استبدل هذا الرابط برابط "تطبيق الويب" (Web App URL) الذي نسخته من جوجل بعد نشر الـ Script
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzHVYiJ6_8aUOtTPMip-0I0YltD47VpMifexyzhL-CLhKLHFUoKfof0vh8qEAYg0pcWNw/exec";
         const TEACHER_PASSWORD = "19961996";
 
@@ -210,12 +208,43 @@
             { question: "قال تعالى: (ودخلَ معه السجنَ فتيانِ) كلمة (فتيان):", options: ["اسم علم", "عرف بالاضافة", "نكرة", "معرف بال"], correct: 2, points: 2 }
         ];
 
+        /**
+         * دالة لتجريد وتوحيد وتطهير الأسماء العربية لمنع التحايل تماماً
+         * (تزيل التشكيل، النقاط، الرموز، توحد الهمزات، الياء، والألف المقصورة، والتاء المربوطة)
+         */
+        function normalizeArabicName(name) {
+            if (!name) return "";
+            let normalized = name.trim();
+            
+            // 1. إزالة جميع حركات التشكيل والشدة والتنوين
+            normalized = normalized.replace(/[\u064B-\u0652]/g, "");
+            
+            // 2. توحيد الهمزات بجميع أشكالها إلى ألف عادية
+            normalized = normalized.replace(/[أإآ]/g, "ا");
+            
+            // 3. توحيد الياء والألف المقصورة في نهاية الكلمات
+            normalized = normalized.replace(/ي/g, "ى");
+            
+            // 4. توحيد التاء المربوطة والهاء في نهاية الكلمات
+            normalized = normalized.replace(/ة/g, "ه");
+            
+            // 5. إزالة جميع علامات الترقيم، النقاط، الحركات الزائدة، والرموز والمسافات الكشيدة
+            normalized = normalized.replace(/[.\-_,،؛؟\/\\()\[\]{}*&^%$#@!+=\dـ]/g, "");
+            
+            // 6. توحيد المسافات المتعددة لتصبح مسافة واحدة فردية فقط
+            normalized = normalized.replace(/\s+/g, " ");
+            
+            return normalized.trim();
+        }
+
         document.getElementById('startPlayBtn').addEventListener('click', async () => {
             studentName = document.getElementById('studentName').value.trim();
             const errorElement = document.getElementById('errorMsg');
 
-            if (studentName.split(" ").length < 3) {
-                errorElement.innerText = "⚠️ يرجى كتابة الاسم الثلاثي باللغة العربية.";
+            // التحقق من كتابة 3 كلمات كحد أدنى باللغة العربية
+            const words = studentName.split(/\s+/).filter(w => w.length > 0);
+            if (words.length < 3) {
+                errorElement.innerText = "⚠️ يرجى كتابة الاسم الثلاثي باللغة العربية ومكوناً من 3 كلمات على الأقل!";
                 errorElement.style.display = "block";
                 return;
             }
@@ -225,13 +254,21 @@
             btn.innerHTML = "<span>جاري التحقق من الاسم...</span>";
 
             try {
-                if (studentName === "الأستاذ بشير حميد" || studentName === "الاستاذ بشير حميد") {
-                    // مسموح له بالعبور دائماً
+                // استثناء المعلم (الأستاذ بشير حميد) بكافة أشكاله وصيغه المكتوبة ليتجاوز قيد الإعادة دائماً
+                const normInput = normalizeArabicName(studentName);
+                const teacher1 = normalizeArabicName("الأستاذ بشير حميد");
+                const teacher2 = normalizeArabicName("الاستاذ بشير حميد");
+
+                if (normInput === teacher1 || normInput === teacher2) {
+                    // مسموح له بالعبور دائماً دون تفتيش سحابي
                 } else {
                     let checkRes = await fetch(GOOGLE_SCRIPT_URL);
                     if (checkRes.ok) {
                         let records = await checkRes.json();
-                        let found = records.some(r => r.name.trim() === studentName);
+                        
+                        // مقارنة الاسم المدخل بقاعدة البيانات بشكل مجرد وموحد تماماً لمكافحة الإعادة
+                        let found = records.some(r => normalizeArabicName(r.name) === normInput);
+                        
                         if (found) {
                             errorElement.innerText = "⚠️ عذراً يا بطل! هذا الاسم قد أدى الامتحان سابقاً، ولا يُسمح بإعادة الاختبار.";
                             errorElement.style.display = "block";
@@ -301,16 +338,16 @@
                 try { encouragingAudio.currentTime = 0; encouragingAudio.play(); } catch(e){}
                 triggerSideConfettiEffect();
             } else {
+                // تلوين الزر المختار فقط بالأحمر الفاتح للإشارة إلى الخطأ دون كشف الإجابة الصحيحة للطلاب
                 btn.classList.add('wrong');
-                allBtns[q.correct].classList.add('correct');
             }
             document.getElementById('nextQuestionBtn').disabled = false;
         }
 
         function triggerSideConfettiEffect() {
             try {
-                confetti({ particleCount: 35, angle: 60, spread: 55, origin: { x: 0, y: 0.7 } });
-                confetti({ particleCount: 35, angle: 120, spread: 55, origin: { x: 1, y: 0.7 } });
+                confetti({ particleCount: 30, angle: 60, spread: 55, origin: { x: 0, y: 0.7 } });
+                confetti({ particleCount: 30, angle: 120, spread: 55, origin: { x: 1, y: 0.7 } });
             } catch (e) {
                 console.error("Confetti error:", e);
             }
@@ -380,7 +417,6 @@
 
         async function saveToSheet(name, score, time) {
             try {
-                // إرسال البيانات كـ text/plain لتفادي مشاكل الـ CORS مع جوجل
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -408,16 +444,34 @@
                 let data = await res.json();
                 if (!Array.isArray(data)) data = [];
                 
-                // الترتيب: الدرجة الأعلى أولاً، وعند التساوي الترتيب حسب الوقت الأقل
-                data.sort((a, b) => b.score - a.score || a.timeSpent - b.timeSpent);
+                // تنقية وتصفية البيانات وإلغاء أي حقول غير صالحة
+                let validData = data.filter(row => row && row.name && row.name.trim() !== "");
+
+                // الترتيب: الدرجة الأعلى أولاً (تنازلي)، وعند التساوي الترتيب حسب الوقت الأقل (تصاعدي)
+                validData.sort((a, b) => {
+                    let scoreA = Number(a.score);
+                    let scoreB = Number(b.score);
+                    let timeA = Number(a.timeSpent);
+                    let timeB = Number(b.timeSpent);
+
+                    if (isNaN(scoreA)) scoreA = 0;
+                    if (isNaN(scoreB)) scoreB = 0;
+                    if (isNaN(timeA)) timeA = 999999;
+                    if (isNaN(timeB)) timeB = 999999;
+
+                    if (scoreB !== scoreA) {
+                        return scoreB - scoreA;
+                    }
+                    return timeA - timeB;
+                });
                 
                 body.innerHTML = "";
-                data.slice(0, 20).forEach((row, i) => {
+                validData.slice(0, 20).forEach((row, i) => {
                     let mins = Math.floor(row.timeSpent / 60);
                     let secs = row.timeSpent % 60;
                     body.innerHTML += `<tr><td>${i+1}</td><td>${row.name}</td><td>${row.score} / 25</td><td>${mins}:${secs.toString().padStart(2,'0')} دقيقة</td></tr>`;
                 });
-                if(data.length === 0) body.innerHTML = "<tr><td colspan='4'>لوحة الأوائل فارغة حالياً. كن أول من يسجل!</td></tr>";
+                if(validData.length === 0) body.innerHTML = "<tr><td colspan='4'>لوحة الأوائل فارغة حالياً. كن أول من يسجل!</td></tr>";
             } catch (e) {
                 console.error("خطأ في جلب بيانات الأوائل:", e);
                 body.innerHTML = "<tr><td colspan='4' style='color:red;'>⚠️ تنبيه: تعذر تحميل لوحة الأوائل. يرجى التأكد من نشر الـ Script بشكل صحيح أو جرب تنشيط الصفحة.</td></tr>";
@@ -436,13 +490,28 @@
                 try {
                     const res = await fetch(GOOGLE_SCRIPT_URL);
                     const data = await res.json();
+                    if (!Array.isArray(data)) data = [];
+
+                    let sortedTeacherData = data.filter(row => row && row.name && row.name.trim() !== "");
+                    sortedTeacherData.sort((a, b) => {
+                        let scoreA = Number(a.score) || 0;
+                        let scoreB = Number(b.score) || 0;
+                        let timeA = Number(a.timeSpent) || 999999;
+                        let timeB = Number(b.timeSpent) || 999999;
+
+                        if (scoreB !== scoreA) {
+                            return scoreB - scoreA;
+                        }
+                        return timeA - timeB;
+                    });
+
                     tbody.innerHTML = "";
-                    data.forEach(row => {
+                    sortedTeacherData.forEach(row => {
                         let mins = Math.floor(row.timeSpent / 60);
                         let secs = row.timeSpent % 60;
                         tbody.innerHTML += `<tr><td><strong>${row.name}</strong></td><td style="color:var(--primary-color); font-weight:bold;">${row.score} / 25</td><td>${mins}:${secs.toString().padStart(2,'0')} دقيقة</td></tr>`;
                     });
-                    if (data.length === 0) {
+                    if (sortedTeacherData.length === 0) {
                         tbody.innerHTML = "<tr><td colspan='3'>لا توجد سجلات بعد.</td></tr>";
                     }
                 } catch (err) {
