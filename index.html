@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>الامتحان التحصيلي لمادة اللغة العربية</title>
+    <!-- استدعاء خط Cairo المميز لتحقيق قراءة مريحة وهوية بصرية منسقة -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- مكتبة الأيقونات الشهيرة لتزيين الأزرار والواجهات البصرية -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- مكتبة القصاصات الملونة الاحتفالية عند النجاح والتميز -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
@@ -27,7 +30,21 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
-        body { background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; position: relative; }
+        
+        /* تعطيل تحديد أو نسخ النصوص في كامل الصفحة كإجراء وقائي ضد تسريب الأسئلة */
+        body { 
+            background-color: var(--bg-light); 
+            color: var(--text-dark); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            overflow-x: hidden; 
+            position: relative;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
 
         .container { max-width: 900px; width: 95%; margin: 30px auto; background: #ffffff; padding: 40px 30px; border-radius: 24px; box-shadow: var(--shadow); border: 1px solid rgba(13, 148, 136, 0.08); text-align: center; }
         .screen { display: none; }
@@ -52,22 +69,67 @@
         .score-box, .progress-text { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); }
         .timer-box { font-size: 1.1rem; font-weight: 700; color: #ef4444; background-color: #fef2f2; padding: 5px 15px; border-radius: 8px; display: flex; align-items: center; gap: 5px; }
 
+        .proctor-status {
+            font-size: 0.85rem;
+            color: #0369a1;
+            background-color: #f0f9ff;
+            border: 1px solid #b9e6fe;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
         .progress-container { width: 100%; height: 12px; background-color: #e5e7eb; border-radius: 10px; margin-bottom: 35px; overflow: hidden; }
         .progress-bar { height: 100%; width: 0%; background-color: var(--primary-color); transition: width 0.4s ease; }
 
-        .question-text { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 15px; text-align: right; border-right: 5px solid var(--primary-color); padding-right: 15px; line-height: 1.7; }
-        .question-badge { display: inline-block; background-color: #e0f2fe; color: #0369a1; font-size: 0.85rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; margin-bottom: 20px; text-align: right; float: right; }
+        /* تنسيقات كروت الأسئلة المتعددة في الصفحة الواحدة */
+        .question-card {
+            background: #ffffff;
+            border: 1px solid rgba(13, 148, 136, 0.1);
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 25px;
+            text-align: right;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+            transition: var(--transition);
+        }
+        .question-card:hover {
+            border-color: rgba(13, 148, 136, 0.25);
+            box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.04);
+        }
+
+        .question-text { font-size: 1.4rem; font-weight: 700; color: var(--text-dark); margin-bottom: 15px; border-right: 5px solid var(--primary-color); padding-right: 15px; line-height: 1.7; display: inline-block; width: auto; }
+        .question-badge { display: inline-block; background-color: #e0f2fe; color: #0369a1; font-size: 0.85rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; margin-bottom: 15px; text-align: left; float: left; }
         
-        .options-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px; clear: both; }
-        .option-btn { background: #ffffff; border: 2px solid #e5e7eb; border-radius: 14px; padding: 20px 25px; font-size: 1.1rem; font-weight: 600; text-align: right; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: var(--transition); }
+        .options-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 10px; clear: both; }
+        
+        /* تعيين تفاعل وتجاوب الخيارات مع اللمس */
+        .option-btn { 
+            background: #ffffff; 
+            border: 2px solid #e5e7eb; 
+            border-radius: 14px; 
+            padding: 18px 22px; 
+            font-size: 1.05rem; 
+            font-weight: 600; 
+            text-align: right; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            transition: var(--transition); 
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .option-btn:hover:not(:disabled) { border-color: var(--primary-color); background-color: var(--bg-light); }
         .option-btn.correct { background-color: #ecfdf5 !important; border-color: var(--correct-color) !important; color: var(--correct-color); font-weight: 700; }
         .option-btn.wrong { background-color: #fef2f2 !important; border-color: var(--wrong-color) !important; color: var(--wrong-color); font-weight: 700; }
 
-        .explanation-box { background-color: #f0fdf4; border: 2px solid #10b981; border-radius: 14px; padding: 15px 20px; color: #14532d; font-size: 1.2rem; font-weight: 800; text-align: center; margin-bottom: 25px; display: none; }
-
         .action-btn { background-color: var(--primary-color); color: #ffffff; border: none; border-radius: 14px; padding: 14px 45px; font-size: 1.2rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 12px; box-shadow: 0 4px 14px rgba(13, 148, 136, 0.3); transition: var(--transition); }
         .action-btn:hover { background-color: var(--primary-dark); }
-        .action-btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
+        .action-btn:disabled { background-color: #9ca3af; cursor: not-allowed; box-shadow: none; }
 
         .result-icon { font-size: 4rem; margin-bottom: 15px; }
         .result-title { font-size: 2.2rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 10px; line-height: 1.6; }
@@ -91,8 +153,39 @@
         .btn-telegram { background-color: var(--telegram-color); }
         .btn-youtube { background-color: var(--youtube-color); }
 
+        /* تنسيق نوافذ الحوار المنبثقة التفاعلية والحماية */
+        .custom-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); display: none; align-items: center;
+            justify-content: center; z-index: 1000; transition: opacity 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+        .custom-modal-overlay.active { display: flex; }
+        .custom-modal {
+            background: #ffffff; border-radius: 20px; padding: 30px; max-width: 450px;
+            width: 90%; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 2px solid var(--primary-color); transform: scale(0.9); transition: transform 0.3s ease;
+        }
+        .custom-modal-overlay.active .custom-modal { transform: scale(1); }
+        .modal-icon { font-size: 3rem; margin-bottom: 15px; }
+        .modal-title { font-size: 1.4rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 10px; }
+        .modal-desc { font-size: 1.05rem; color: var(--text-dark); margin-bottom: 25px; line-height: 1.6; }
+        .modal-buttons { display: flex; gap: 10px; justify-content: center; }
+        .modal-btn { padding: 10px 24px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: var(--transition); }
+        .modal-btn-primary { background: var(--primary-color); color: white; }
+        .modal-btn-primary:hover { background: var(--primary-dark); }
+        .modal-btn-secondary { background: #e5e7eb; color: var(--text-dark); }
+        .modal-btn-secondary:hover { background: #d1d5db; }
+
+        /* Teacher Screen Styles */
         #teacherScreen table { width: 100%; margin-top: 20px; }
         .danger-btn { background-color: var(--wrong-color); color: white; padding: 10px 20px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
+
+        @media (max-width: 768px) {
+            .options-container { grid-template-columns: 1fr; }
+            .info-grid { grid-template-columns: repeat(2, 1fr); }
+            .welcome-title { font-size: 1.7rem; }
+        }
     </style>
 </head>
 <body>
@@ -100,8 +193,8 @@
     <main class="container">
         <!-- شاشة الترحيب -->
         <div id="welcomeScreen" class="screen active">
-            <h1 class="welcome-title">مرحبًا بكم في الامتحان التحصيلي لمادة اللغة العربية 💎</h1>
-            <p class="welcome-desc">اختبار تحصيلي مكثف ومجاني تماماً للأستاذ القدير بشير حميد!</p>
+            <h1 class="welcome-title">الامتحان التحصيلي لمادة اللغة العربية 💎</h1>
+            <p class="welcome-desc">تحت إشراف الأستاذ القدير بشير حميد. يرجى تلبية جميع شروط وقوانين الحماية.</p>
 
             <section class="info-grid">
                 <div class="info-card"><span class="card-icon">📋</span><span class="card-label">الأسئلة</span><span class="card-value">15 سؤالاً</span></div>
@@ -111,9 +204,9 @@
             </section>
 
             <section class="input-box">
-                <label for="studentName" class="input-label">✏️ اكتب اسمك الثلاثي باللغة العربية لتبدأ:</label>
-                <input type="text" id="studentName" class="name-input" placeholder="أدخل اسمك هنا...">
-                <div id="errorMsg" class="error-msg">⚠️ يرجى كتابة الاسم الثلاثي باللغة العربية.</div>
+                <label for="studentName" class="input-label">✏️ اكتب اسمك الثلاثي فقط باللغة العربية لتبدأ:</label>
+                <input type="text" id="studentName" class="name-input" placeholder="مثال: محمد احمد علي...">
+                <div id="errorMsg" class="error-msg">⚠️ يرجى كتابة الاسم الثلاثي فقط باللغة العربية.</div>
             </section>
 
             <button id="startPlayBtn" class="action-btn">بدء الاختبار ◀</button>
@@ -122,16 +215,17 @@
         <!-- شاشة الأسئلة -->
         <div id="quizScreen" class="screen">
             <div class="quiz-header">
-                <div class="progress-text">السؤال: <span id="currentQNum">1</span> من 15</div>
+                <div class="progress-text">المجموعة: <span id="currentQNum">1</span> من 5</div>
+                <div class="proctor-status"><i class="fa-solid fa-shield-halved text-sky-600 animate-pulse"></i> 🔒 نظام مراقبة الغش نشط</div>
                 <div id="timerDisplay" class="timer-box">⏱️ <span id="timeLeft">30:00</span></div>
                 <div class="score-box">الدرجات: <span id="currentScore">0</span></div>
             </div>
             <div class="progress-container"><div id="progressBar" class="progress-bar"></div></div>
-            <div id="questionPointsBadge" class="question-badge"></div>
-            <h2 id="questionText" class="question-text"></h2>
-            <div id="optionsContainer" class="options-container"></div>
-            <div id="explanationBox" class="explanation-box"></div>
-            <button id="nextQuestionBtn" class="action-btn" disabled>السؤال التالي ◀</button>
+            
+            <!-- حاوية الأسئلة الثلاثة المجمعة -->
+            <div id="questionsContainer"></div>
+            
+            <button id="nextQuestionBtn" class="action-btn" disabled>المجموعة التالية ◀</button>
         </div>
 
         <!-- شاشة النتائج -->
@@ -167,6 +261,7 @@
         <div id="teacherScreen" class="screen">
             <h2>لوحة تحكم الأستاذ بشير</h2>
             <div style="margin: 20px 0;">
+                <button class="danger-btn" onclick="triggerClearConfirmation()">🗑️ حذف جميع النتائج وتصفير الجدول</button>
                 <button class="action-btn" onclick="location.reload()">العودة للرئيسية ↩</button>
             </div>
             <div class="table-responsive">
@@ -178,21 +273,61 @@
         </div>
     </main>
 
+    <!-- النوافذ المنبثقة المخصصة للتفاعل الآمن دون استخدام alert/confirm -->
+    <div id="customAlertOverlay" class="custom-modal-overlay">
+        <div class="custom-modal">
+            <div id="alertIcon" class="modal-icon">⚠️</div>
+            <h3 id="alertTitle" class="modal-title">تنبيه</h3>
+            <p id="alertDesc" class="modal-desc">نص الرسالة الافتراضي.</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-primary" onclick="closeCustomAlert()">حسناً</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="customConfirmOverlay" class="custom-modal-overlay">
+        <div class="custom-modal">
+            <div class="modal-icon" style="color: var(--wrong-color);">🗑️</div>
+            <h3 class="modal-title">تأكيد عملية الحذف</h3>
+            <p class="modal-desc">هل أنت متأكد فعلاً من رغبتك في حذف جميع نتائج الطلاب من ملف الـ Google Sheets نهائياً؟ لا يمكن التراجع عن هذا الإجراء.</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-secondary" onclick="closeCustomConfirm(false)">إلغاء</button>
+                <button class="modal-btn modal-btn-primary" style="background-color: var(--wrong-color);" onclick="closeCustomConfirm(true)">نعم، احذف الكل</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzHVYiJ6_8aUOtTPMip-0I0YltD47VpMifexyzhL-CLhKLHFUoKfof0vh8qEAYg0pcWNw/exec";
         const TEACHER_PASSWORD = "19961996";
 
-        let currentQuestionIndex = 0;
+        const QUESTIONS_PER_PAGE = 3; 
+        let currentPageIndex = 0; 
         let totalScore = 0;
         let timeLeft = 30 * 60;
         let timerInterval;
         let studentName = "";
+        let onConfirmCallback = null;
+        let isQuizActive = false; // تشير لكون الامتحان قيد الحل حالياً لتفعيل حماية التنقل
+        let tabSwitchCount = 0; // عداد محاولات مغادرة الصفحة
 
         const encouragingAudio = new Audio("https://assets.mixkit.co/active_storage/sfx/1435/1435-84.wav");
 
+        // تعطيل الزر الأيمن للفأرة بالكامل لمنع فحص العنصر
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // تعطيل اختصارات لوحة المفاتيح الشهيرة للغش وفحص الصفحات
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'C' || e.key === 'c' || e.key === 'J' || e.key === 'j')) || 
+                (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
+                e.preventDefault();
+            }
+        });
+
         const quizQuestions = [
             { question: "قال تعالى: (وقل ربي أعوذُ بكَ من همزاتِ الشياطينِ). ما نوع الجمع في كلمة (الشياطين) :", options: ["جمع مذكر سالم", "جمع مؤنث سالم", "جمع تكسير", "مثنى"], correct: 2, points: 2 },
-            { question: "كرَّمَ المديرُ المتفوقينَ، عند بناء الجملة للمجهول تصبح:", options: ["كُرِمَ المتفوقينَ", "كُرِمَ المتفوقينُ", "كُرِمَ المتفوقانِ", "كُرِمَ المتفوقونَ"], correct: 3, points: 1 },
+            { question: "كرَّمَ المديرُ المتفوقينَ، عند بناء الجملة للمجهول تصصبح:", options: ["كُرِمَ المتفوقينَ", "كُرِمَ المتفوقينُ", "كُرِمَ المتفوقانِ", "كُرِمَ المتفوقونَ"], correct: 3, points: 1 },
             { question: "قال تعالى: (وقل ربي أعوذُ بكَ من همزاتِ الشياطينِ). ما اعراب كلمة (الشياطين):", options: ["مفعول به منصوب بالياء", "مضاف اليه مجرور بالياء", "مفعول به منصوب بالفتحة", "مضاف اليه مجرور بالكسرة"], correct: 3, points: 2 },
             { question: "إنَّ القصيدةَ كُتِبتْ في الصفِ. نائب الفاعل في الجملة السابقة هو:", options: ["الصف", "ضمير مستتر تقديره (هي)", "التاء المتصلة بالفعل", "لا يوجد نائب فاعل"], correct: 1, points: 1 },
             { question: "قال تعالى: (ولقد أنزلْنَا إليكَ آياتٍ بيناتٍ ومَا يكفرُ بها إلا الفاسقونَ). ما عراب كلمة (آيات):", options: ["مضاف اليه مجرور بالكسرة", "فاعل", "مفعول به", "خبر"], correct: 2, points: 2 },
@@ -208,9 +343,41 @@
             { question: "قال تعالى: (ودخلَ معه السجنَ فتيانِ) كلمة (فتيان):", options: ["اسم علم", "عرف بالاضافة", "نكرة", "معرف بال"], correct: 2, points: 2 }
         ];
 
+        // دوال التحكم بنوافذ الحوار المخصصة لمنع استخدام alert()
+        function showCustomAlert(title, message, icon = "⚠️") {
+            document.getElementById('alertIcon').textContent = icon;
+            document.getElementById('alertTitle').textContent = title;
+            document.getElementById('alertDesc').textContent = message;
+            document.getElementById('customAlertOverlay').classList.add('active');
+        }
+
+        function closeCustomAlert() {
+            document.getElementById('customAlertOverlay').classList.remove('active');
+        }
+
+        function triggerClearConfirmation() {
+            document.getElementById('customConfirmOverlay').classList.add('active');
+            onConfirmCallback = async function() {
+                try {
+                    await fetch(GOOGLE_SCRIPT_URL + "?clear=true", { method: 'POST', mode: 'no-cors' });
+                    showCustomAlert("نجاح العملية", "تم تصفير وحذف جميع نتائج الطلاب بنجاح من جوجل شيت.", "✅");
+                    setTimeout(() => location.reload(), 1500);
+                } catch(e) {
+                    showCustomAlert("خطأ", "تعذر مسح البيانات السحابية.", "❌");
+                }
+            };
+        }
+
+        function closeCustomConfirm(approved) {
+            document.getElementById('customConfirmOverlay').classList.remove('active');
+            if (approved && onConfirmCallback) {
+                onConfirmCallback();
+            }
+            onConfirmCallback = null;
+        }
+
         /**
-         * دالة لتجريد وتوحيد وتطهير الأسماء العربية لمنع التحايل تماماً
-         * (تزيل التشكيل، النقاط، الرموز، توحد الهمزات، الياء، والألف المقصورة، والتاء المربوطة)
+         * دالة متطورة لتجريد وتوحيد وتطهير الأسماء العربية لمنع التحايل تماماً
          */
         function normalizeArabicName(name) {
             if (!name) return "";
@@ -222,7 +389,7 @@
             // 2. توحيد الهمزات بجميع أشكالها إلى ألف عادية
             normalized = normalized.replace(/[أإآ]/g, "ا");
             
-            // 3. توحيد الياء والألف المقصورة في نهاية الكلمات
+            // 3. توحيد الياء والألف المقصورة في نهاية الكلمات وبدايتها
             normalized = normalized.replace(/ي/g, "ى");
             
             // 4. توحيد التاء المربوطة والهاء في نهاية الكلمات
@@ -237,36 +404,61 @@
             return normalized.trim();
         }
 
+        // نظام مراقبة الغش الذكي: رصد تصفح الطلاب وتغيير التبويبات
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && isQuizActive) {
+                tabSwitchCount++;
+                if (tabSwitchCount === 1) {
+                    // التحذير الأول
+                    showCustomAlert("⚠️ رصد محاولة خروج للغش!", "لقد غادرت صفحة الامتحان، يمنع الخروج تماماً. في حال تكرار هذا الفعل، سيتم إنهاء وسحب ورقتك وتسجيل محاولة غش تلقائياً بالدرجة الحالية!", "🚫");
+                } else if (tabSwitchCount >= 2) {
+                    // سحب ورقة الامتحان وحساب الدرجة فوراً مع وسم الطالب كغاش
+                    isQuizActive = false;
+                    studentName = studentName + " - (محاولة غش!)";
+                    finishQuiz();
+                    showCustomAlert("🛑 تم إنهاء الامتحان وسحب ورقتك!", "بسبب تكرار خروجك من الصفحة ومخالفتك لقوانين الامتحان، تم تقديم إجاباتك تلقائياً للتحكيم ووسم ورقتك بمحاولة الغش في النظام.", "🚫");
+                }
+            }
+        });
+
         document.getElementById('startPlayBtn').addEventListener('click', async () => {
             studentName = document.getElementById('studentName').value.trim();
             const errorElement = document.getElementById('errorMsg');
 
-            // التحقق من كتابة 3 كلمات كحد أدنى باللغة العربية
+            // 1. التحقق من البصمة الرقمية للجهاز أولاً لمنع التحايل ومحاولات الاستعارة بنفس الجهاز
+            if (localStorage.getItem('arabic_quiz_submitted_v1') === 'true') {
+                const isTeacher = (studentName === "الأستاذ بشير حميد" || studentName === "الاستاذ بشير حميد");
+                if (!isTeacher) {
+                    errorElement.innerText = "⚠️ عذراً! لقد قمت بتقديم هذا الامتحان مسبقاً من هذا الجهاز، ولا يسمح النظام بالمحاولات المتعددة.";
+                    errorElement.style.display = "block";
+                    return;
+                }
+            }
+
+            // 2. قيد مخصص للاسم الثلاثي فقط (3 كلمات بالضبط دون زيادة أو نقصان)
             const words = studentName.split(/\s+/).filter(w => w.length > 0);
-            if (words.length < 3) {
-                errorElement.innerText = "⚠️ يرجى كتابة الاسم الثلاثي باللغة العربية ومكوناً من 3 كلمات على الأقل!";
+            if (words.length !== 3) {
+                errorElement.innerText = "⚠️ يرجى كتابة اسمك الثلاثي فقط (3 كلمات بالضبط دون زيادة أو نقصان).";
                 errorElement.style.display = "block";
                 return;
             }
 
             const btn = document.getElementById('startPlayBtn');
             btn.disabled = true;
-            btn.innerHTML = "<span>جاري التحقق من الاسم...</span>";
+            btn.innerHTML = "<span>جاري التحقق من الاسم والقيود...</span>";
 
             try {
-                // استثناء المعلم (الأستاذ بشير حميد) بكافة أشكاله وصيغه المكتوبة ليتجاوز قيد الإعادة دائماً
                 const normInput = normalizeArabicName(studentName);
                 const teacher1 = normalizeArabicName("الأستاذ بشير حميد");
                 const teacher2 = normalizeArabicName("الاستاذ بشير حميد");
 
                 if (normInput === teacher1 || normInput === teacher2) {
-                    // مسموح له بالعبور دائماً دون تفتيش سحابي
+                    // الأستاذ بشير معفي دائماً من القيود السحابية لغرض المراجعة
                 } else {
                     let checkRes = await fetch(GOOGLE_SCRIPT_URL);
                     if (checkRes.ok) {
                         let records = await checkRes.json();
-                        
-                        // مقارنة الاسم المدخل بقاعدة البيانات بشكل مجرد وموحد تماماً لمكافحة الإعادة
+                        // التحقق المتقدم والمحمي بالكامل عبر التوحيد والمقارنة
                         let found = records.some(r => normalizeArabicName(r.name) === normInput);
                         
                         if (found) {
@@ -279,7 +471,7 @@
                     }
                 }
             } catch (e) {
-                console.error("خطأ أثناء التحقق:", e);
+                console.error("خطأ أثناء التحقق السحابي:", e);
             }
 
             errorElement.style.display = "none";
@@ -288,8 +480,11 @@
 
             document.getElementById('welcomeScreen').classList.remove('active');
             document.getElementById('quizScreen').classList.add('active');
+            
+            // بدء الامتحان وتفعيل وضع المراقبة الحية للغش
+            isQuizActive = true;
             startTimer();
-            showQuestion();
+            showQuestionBatch();
         });
 
         function startTimer() {
@@ -305,43 +500,79 @@
             }, 1000);
         }
 
-        function showQuestion() {
-            const q = quizQuestions[currentQuestionIndex];
-            document.getElementById('currentQNum').textContent = currentQuestionIndex + 1;
-            document.getElementById('questionText').textContent = q.question;
-            document.getElementById('questionPointsBadge').textContent = `الدرجة: ${q.points}`;
-            document.getElementById('progressBar').style.width = `${((currentQuestionIndex + 1) / 15) * 100}%`;
-            
-            const container = document.getElementById('optionsContainer');
+        function showQuestionBatch() {
+            const container = document.getElementById('questionsContainer');
             container.innerHTML = "";
             document.getElementById('nextQuestionBtn').disabled = true;
-            document.getElementById('explanationBox').style.display = "none";
 
-            q.options.forEach((opt, idx) => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.textContent = opt;
-                btn.onclick = () => checkAnswer(idx, btn);
-                container.appendChild(btn);
+            const totalPages = Math.ceil(quizQuestions.length / QUESTIONS_PER_PAGE);
+            document.getElementById('currentQNum').textContent = currentPageIndex + 1;
+            document.getElementById('progressBar').style.width = `${((currentPageIndex + 1) / totalPages) * 100}%`;
+
+            const startIndex = currentPageIndex * QUESTIONS_PER_PAGE;
+            const endIndex = Math.min(startIndex + QUESTIONS_PER_PAGE, quizQuestions.length);
+            const currentBatch = quizQuestions.slice(startIndex, endIndex);
+            
+            let answeredCount = 0; 
+
+            currentBatch.forEach((q, batchIdx) => {
+                const absoluteIdx = startIndex + batchIdx;
+
+                // إنشاء كروت مخصصة لكل سؤال بشكل تتابعي في الصفحة
+                const card = document.createElement('div');
+                card.className = 'question-card';
+
+                const badge = document.createElement('div');
+                badge.className = 'question-badge';
+                badge.textContent = `الدرجة: ${q.points}`;
+                card.appendChild(badge);
+
+                const qText = document.createElement('h2');
+                qText.className = 'question-text';
+                qText.innerHTML = `<span style="color: var(--primary-color);">السؤال ${absoluteIdx + 1}:</span> ${q.question}`;
+                card.appendChild(qText);
+
+                const optsContainer = document.createElement('div');
+                optsContainer.className = 'options-container';
+
+                q.options.forEach((opt, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.textContent = opt;
+                    btn.onclick = () => checkAnswer(idx, btn, q, optsContainer);
+                    optsContainer.appendChild(btn);
+                });
+
+                card.appendChild(optsContainer);
+                container.appendChild(card);
+
+                function checkAnswer(selectedIdx, btn, questionObj, parentContainer) {
+                    const allBtns = parentContainer.querySelectorAll('.option-btn');
+                    allBtns.forEach(b => b.disabled = true); // غلق خيارات هذا السؤال فقط لمنع التغيير
+
+                    if (selectedIdx === questionObj.correct) {
+                        btn.classList.add('correct');
+                        totalScore += questionObj.points;
+                        document.getElementById('currentScore').textContent = totalScore;
+                        try { encouragingAudio.currentTime = 0; encouragingAudio.play(); } catch(e){}
+                        triggerSideConfettiEffect();
+                    } else {
+                        // الاقتصار على إبراز خطأ الطالب لتلميحه دون إظهار الإجابة الصحيحة للطلاب لمنع كشف الحلول وتسريبها
+                        btn.classList.add('wrong');
+                    }
+
+                    answeredCount++;
+                    // تفعيل زر الانتقال فقط عندما تتم الإجابة على كافة الأسئلة المعروضة في الصفحة
+                    if (answeredCount === currentBatch.length) {
+                        document.getElementById('nextQuestionBtn').disabled = false;
+                        if (currentPageIndex + 1 === totalPages) {
+                            document.getElementById('nextQuestionBtn').textContent = "إنهاء وتصحيح الاختبار 🎉";
+                        } else {
+                            document.getElementById('nextQuestionBtn').textContent = "المجموعة التالية ◀";
+                        }
+                    }
+                }
             });
-        }
-
-        function checkAnswer(idx, btn) {
-            const q = quizQuestions[currentQuestionIndex];
-            const allBtns = document.querySelectorAll('.option-btn');
-            allBtns.forEach(b => b.disabled = true);
-
-            if (idx === q.correct) {
-                btn.classList.add('correct');
-                totalScore += q.points;
-                document.getElementById('currentScore').textContent = totalScore;
-                try { encouragingAudio.currentTime = 0; encouragingAudio.play(); } catch(e){}
-                triggerSideConfettiEffect();
-            } else {
-                // تلوين الزر المختار فقط بالأحمر الفاتح للإشارة إلى الخطأ دون كشف الإجابة الصحيحة للطلاب
-                btn.classList.add('wrong');
-            }
-            document.getElementById('nextQuestionBtn').disabled = false;
         }
 
         function triggerSideConfettiEffect() {
@@ -367,9 +598,11 @@
         }
 
         document.getElementById('nextQuestionBtn').onclick = () => {
-            currentQuestionIndex++;
-            if (currentQuestionIndex < quizQuestions.length) {
-                showQuestion();
+            currentPageIndex++;
+            const totalPages = Math.ceil(quizQuestions.length / QUESTIONS_PER_PAGE);
+            if (currentPageIndex < totalPages) {
+                showQuestionBatch();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
                 finishQuiz();
             }
@@ -377,6 +610,14 @@
 
         async function finishQuiz() {
             clearInterval(timerInterval);
+            isQuizActive = false; // تعطيل نظام تتبع تبديل التطبيقات فور إرسال الورقة للتصحيح
+
+            // زرع البصمة الرقمية للجهاز لتأمينه ضد تكرار التقديم
+            const isTeacher = (studentName.includes("الأستاذ بشير") || studentName.includes("الاستاذ بشير"));
+            if (!isTeacher) {
+                localStorage.setItem('arabic_quiz_submitted_v1', 'true');
+            }
+
             document.getElementById('quizScreen').classList.remove('active');
             document.getElementById('resultScreen').classList.add('active');
             document.getElementById('studentFinalName').textContent = `الاسم: ${studentName}`;
@@ -444,20 +685,14 @@
                 let data = await res.json();
                 if (!Array.isArray(data)) data = [];
                 
-                // تنقية وتصفية البيانات وإلغاء أي حقول غير صالحة
                 let validData = data.filter(row => row && row.name && row.name.trim() !== "");
 
                 // الترتيب: الدرجة الأعلى أولاً (تنازلي)، وعند التساوي الترتيب حسب الوقت الأقل (تصاعدي)
                 validData.sort((a, b) => {
-                    let scoreA = Number(a.score);
-                    let scoreB = Number(b.score);
-                    let timeA = Number(a.timeSpent);
-                    let timeB = Number(b.timeSpent);
-
-                    if (isNaN(scoreA)) scoreA = 0;
-                    if (isNaN(scoreB)) scoreB = 0;
-                    if (isNaN(timeA)) timeA = 999999;
-                    if (isNaN(timeB)) timeB = 999999;
+                    let scoreA = Number(a.score) || 0;
+                    let scoreB = Number(b.score) || 0;
+                    let timeA = Number(a.timeSpent) || 999999;
+                    let timeB = Number(b.timeSpent) || 999999;
 
                     if (scoreB !== scoreA) {
                         return scoreB - scoreA;
@@ -518,7 +753,7 @@
                     tbody.innerHTML = "<tr><td colspan='3' style='color:red;'>خطأ في جلب سجل البيانات.</td></tr>";
                 }
             } else {
-                alert("كلمة مرور خاطئة!");
+                showCustomAlert("خطأ في الدخول", "كلمة المرور المدخلة غير صحيحة!", "❌");
             }
         }
 
