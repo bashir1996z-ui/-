@@ -136,6 +136,20 @@
         .teacher-access-container { margin-top: 25px; padding-top: 20px; border-top: 1px dashed #e5e7eb; }
         .teacher-link-btn { background: none; border: none; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; cursor: pointer; text-decoration: underline; }
 
+        /* تنسيق النص المضاف وتوزيع الأزرار */
+        .social-notice {
+            margin-top: 30px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            background-color: var(--bg-light);
+            border: 1px solid rgba(13, 148, 136, 0.2);
+            padding: 12px 20px;
+            border-radius: 14px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
         .social-btn { text-decoration: none; padding: 14px 30px; border-radius: 16px; color: #ffffff; display: inline-flex; align-items: center; gap: 10px; font-size: 1.1rem; font-weight: 700; margin: 5px; }
         .btn-telegram { background-color: var(--telegram-color); }
         .btn-youtube { background-color: var(--youtube-color); }
@@ -166,7 +180,6 @@
         #teacherScreen table { width: 100%; margin-top: 20px; }
         .danger-btn { background-color: var(--wrong-color); color: white; padding: 10px 20px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
 
-        /* طبقة حظر التقاط الصور خلال الامتحان */
         .screenshot-blur-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -255,7 +268,12 @@
                 </div>
             </div>
 
-            <div style="margin-top: 30px;">
+            <!-- النص المضاف حديثاً قبل الأزرار -->
+            <div class="social-notice">
+                📢 سيتم نشر الدرجات والأجوبة الصحيحة على قناة الأستاذ في التلكرام
+            </div>
+
+            <div>
                 <a href="https://t.me/sm_3rd" target="_blank" class="social-btn btn-telegram"><i class="fab fa-telegram-plane"></i> تليجرام</a>
                 <a href="https://www.youtube.com/@Bashir_6123" target="_blank" class="social-btn btn-youtube"><i class="fab fa-youtube"></i> يوتيوب</a>
             </div>
@@ -312,7 +330,7 @@
         let timerInterval;
         let studentName = "";
         let onConfirmCallback = null;
-        let isExamActive = false; // متغير لتحديد هل الطالب في شاشة الامتحان أم لا
+        let isExamActive = false;
 
         const encouragingAudio = new Audio("https://assets.mixkit.co/active_storage/sfx/1435/1435-84.wav");
 
@@ -335,7 +353,7 @@
 
         let userAnswers = new Array(quizQuestions.length).fill(null);
 
-        // --- آليات منع أخذ الشاشة خلال الامتحان ---
+        // آليات حظر التقاط الشاشة
         document.addEventListener('contextmenu', (e) => {
             if (isExamActive) e.preventDefault();
         });
@@ -350,12 +368,11 @@
         document.addEventListener('keydown', (e) => {
             if (!isExamActive) return;
 
-            // حظر اختصارات التصوير والطباعة وتطوير المتصفح
             if (
                 e.key === 'PrintScreen' ||
                 (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'S' || e.key === 'C')) ||
                 (e.ctrlKey && (e.key === 'p' || e.key === 'P' || e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S')) ||
-                (e.metaKey && e.shiftKey && (e.key === '3' || e.key === '4' || e.key === '5')) || // نظام الماك
+                (e.metaKey && e.shiftKey && (e.key === '3' || e.key === '4' || e.key === '5')) ||
                 (e.key === 'F12')
             ) {
                 e.preventDefault();
@@ -469,7 +486,7 @@
             document.getElementById('welcomeScreen').classList.remove('active');
             document.getElementById('quizScreen').classList.add('active');
             
-            isExamActive = true; // تفعيل قيد منع الصور
+            isExamActive = true;
             startTimer();
             showQuestionBatch();
         });
@@ -586,7 +603,7 @@
 
         async function finishQuiz() {
             clearInterval(timerInterval);
-            isExamActive = false; // **إيقاف قيد منع السكرين شوت كلياً فور انتهاء الامتحان**
+            isExamActive = false; // السماح بأخذ صور للشاشة في شاشة النتائج
 
             totalScore = 0;
             quizQuestions.forEach((q, idx) => {
