@@ -318,11 +318,10 @@
     </div>
 
     <script>
-        // تم دمج رابط Google Apps Script الخاص بك بنجاح في السطر أدناه 👇
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxkIhzmaQNXkHlOq-0nqs-eUNURkDfA4eWgq219zGHPTItCGyQvi8u8Y85wbG_sJ5Ov/exec";
+        const GOOGLE_SCRIPT_URL = " https://script.google.com/macros/s/AKfycbxkIhzmaQNXkHlOq-0nqs-eUNURkDfA4eWgq219zGHPTItCGyQvi8u8Y85wbG_sJ5Ov/exec";
         const TEACHER_PASSWORD = "19961996";
 
-        // المعرّف الخاص بهذا الامتحان فقط لمنع التكرار للجهاز الواحد
+        // 🔑 المعرّف الخاص بهذا الامتحان (تغييره يتيح للجميع تقديم الامتحان الجديد)
         const EXAM_STORAGE_KEY = "arabic_quiz_2026_exam_v2";
 
         const QUESTIONS_PER_PAGE = 3; 
@@ -437,6 +436,7 @@
             studentName = document.getElementById('studentName').value.trim();
             const errorElement = document.getElementById('errorMsg');
 
+            // الفحص بناءً على المعرّف الجديد لهذا الامتحان فقط
             if (localStorage.getItem(EXAM_STORAGE_KEY) === 'true') {
                 const isTeacher = (studentName === "الأستاذ بشير حميد" || studentName === "الاستاذ بشير حميد");
                 if (!isTeacher) {
@@ -588,4 +588,4 @@
                     allAnswered = false;
                     break;
                 }
-        
+  
