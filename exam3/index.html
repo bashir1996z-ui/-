@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -143,6 +143,36 @@
             margin-bottom: 15px;
         }
 
+        .social-buttons-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .telegram-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .pointing-finger {
+            position: absolute;
+            top: -38px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            animation: pointDown 1s infinite alternate ease-in-out;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        @keyframes pointDown {
+            0% { transform: translate(-50%, 0); }
+            100% { transform: translate(-50%, 12px); }
+        }
+
         .social-btn { text-decoration: none; padding: 14px 30px; border-radius: 16px; color: #ffffff; display: inline-flex; align-items: center; gap: 10px; font-size: 1.1rem; font-weight: 700; margin: 5px; }
         .btn-telegram { background-color: var(--telegram-color); }
         .btn-youtube { background-color: var(--youtube-color); }
@@ -218,7 +248,7 @@
             
             <div id="questionsContainer"></div>
             
-            <button id="nextQuestionBtn" class="action-btn" disabled>المجموعة التالية ◀</button>
+            <button id="nextQuestionBtn" class="action-btn" disabled onclick="handleNextPage()">المجموعة التالية ◀</button>
         </div>
 
         <!-- شاشة النتائج -->
@@ -248,8 +278,11 @@
                 📢 سيتم نشر الدرجات والأجوبة الصحيحة على قناة الأستاذ في التلكرام
             </div>
 
-            <div>
-                <a href="https://t.me/sm_3rd" target="_blank" class="social-btn btn-telegram">تليجرام</a>
+            <div class="social-buttons-wrapper">
+                <div class="telegram-container">
+                    <div class="pointing-finger">👇</div>
+                    <a href="https://t.me/sm_3rd" target="_blank" class="social-btn btn-telegram">تليجرام</a>
+                </div>
                 <a href="https://www.youtube.com/@Bashir_6123" target="_blank" class="social-btn btn-youtube">يوتيوب</a>
             </div>
         </div>
@@ -295,22 +328,20 @@
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxkIhzmaQNXkHlOq-0nqs-eUNURkDfA4eWgq219zGHPTItCGyQvi8u8Y85wbG_sJ5Ov/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzjsye_4jPTcYEw32E9itLkourhn6V6g2B8etKd_3LxLARReVMqWPQ4kyv5jhrQOc70/exec";
         const TEACHER_PASSWORD = "19961996";
         const EXAM_STORAGE_KEY = "arabic_quiz_2026_exam_v2";
 
         const QUESTIONS_PER_PAGE = 3; 
         let currentPageIndex = 0; 
         let totalScore = 0;
-        let timeLeft = 30 * 60;
+        let TOTAL_EXAM_TIME = 30 * 60; // 30 دقيقة بالثواني
+        let timeLeft = TOTAL_EXAM_TIME;
         let timerInterval;
         let studentName = "";
         let onConfirmCallback = null;
         let isExamActive = false;
 
-        const encouragingAudio = new Audio("https://assets.mixkit.co/active_storage/sfx/1435/1435-84.wav");
-
-        // قائمة الأسئلة الجديدة المحدثة بالكامل مع درجاتها وإجاباتها الصحيحة
         const quizQuestions = [
             { 
                 question: "قال تعالى: (يَا أَيُّهَا الَّذِينَ آمَنُوا لَا يَسْخَرْ قَوْمٌ مِّن قَوْمٍ عَسَى أَن يَكُونُوا خَيْرًا مِّنْهُمْ)<br>أولاً: ما نوع (لا) وما حالة الفعل بعدها؟", 
@@ -394,6 +425,7 @@
 
         let userAnswers = new Array(quizQuestions.length).fill(null);
 
+        // حماية الامتحان من الحفظ والنسخ والتقاط الشاشة
         document.addEventListener('contextmenu', (e) => { if (isExamActive) e.preventDefault(); });
 
         document.addEventListener('keyup', (e) => {
@@ -461,6 +493,32 @@
             normalized = normalized.replace(/[.\-_,،؛؟\/\\()\[\]{}*&^%$#@!+=\dـ]/g, "");
             normalized = normalized.replace(/\s+/g, " ");
             return normalized.trim();
+        }
+
+        // دالة تحويل نص الوقت (مثال: "04:15" أو "4 دقيقة و 15 ثانية") إلى ثوانٍ لغرض الفرز والترتيب
+        function parseTimeToSeconds(timeStr) {
+            if (!timeStr) return 999999;
+            if (typeof timeStr === 'number') return timeStr;
+            
+            let str = String(timeStr).trim();
+            
+            // حالة صيغة mm:ss أو hh:mm:ss
+            if (str.includes(':')) {
+                let parts = str.split(':').map(p => parseInt(p, 10) || 0);
+                if (parts.length === 2) return parts[0] * 60 + parts[1];
+                if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+            }
+            
+            // استخراج الأرقام إذا كان النص مفسراً بالكلمات
+            let numbers = str.match(/\d+/g);
+            if (numbers) {
+                if (numbers.length >= 2) {
+                    return parseInt(numbers[0], 10) * 60 + parseInt(numbers[1], 10);
+                } else if (numbers.length === 1) {
+                    return parseInt(numbers[0], 10);
+                }
+            }
+            return 999999;
         }
 
         document.getElementById('startPlayBtn').addEventListener('click', async () => {
@@ -594,15 +652,15 @@
             }
         }
 
-        function selectOption(questionIndex, optionIndex, parentContainer) {
+        function selectOption(questionIndex, optionIndex, container) {
             userAnswers[questionIndex] = optionIndex;
-
-            const buttons = parentContainer.querySelectorAll('.option-btn');
-            buttons.forEach((btn, idx) => {
+            
+            const buttons = container.querySelectorAll('.option-btn');
+            buttons.forEach((b, idx) => {
                 if (idx === optionIndex) {
-                    btn.classList.add('selected');
+                    b.classList.add('selected');
                 } else {
-                    btn.classList.remove('selected');
+                    b.classList.remove('selected');
                 }
             });
 
@@ -622,20 +680,22 @@
             document.getElementById('nextQuestionBtn').disabled = !allAnswered;
         }
 
-        document.getElementById('nextQuestionBtn').addEventListener('click', () => {
+        function handleNextPage() {
             const totalPages = Math.ceil(quizQuestions.length / QUESTIONS_PER_PAGE);
             if (currentPageIndex < totalPages - 1) {
                 currentPageIndex++;
                 showQuestionBatch();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
                 finishQuiz();
             }
-        });
+        }
 
         async function finishQuiz() {
             clearInterval(timerInterval);
             isExamActive = false;
 
+            // حساب الدرجة النهائية
             totalScore = 0;
             quizQuestions.forEach((q, idx) => {
                 if (userAnswers[idx] === q.correct) {
@@ -643,117 +703,135 @@
                 }
             });
 
+            // حساب الوقت المستغرق
+            const timeSpentSeconds = TOTAL_EXAM_TIME - timeLeft;
+            const minutesSpent = Math.floor(timeSpentSeconds / 60);
+            const secondsSpent = timeSpentSeconds % 60;
+            const formattedTime = `${minutesSpent.toString().padStart(2, '0')}:${secondsSpent.toString().padStart(2, '0')}`;
+
+            // حفظ التقديم في المتصفح لمنع التكرار
+            const normInput = normalizeArabicName(studentName);
+            const teacher1 = normalizeArabicName("الأستاذ بشير حميد");
+            const teacher2 = normalizeArabicName("الاستاذ بشير حميد");
+            if (normInput !== teacher1 && normInput !== teacher2) {
+                localStorage.setItem(EXAM_STORAGE_KEY, 'true');
+            }
+
+            // إظهار النتائج للحيّز المستخدم
             document.getElementById('quizScreen').classList.remove('active');
             document.getElementById('resultScreen').classList.add('active');
 
-            localStorage.setItem(EXAM_STORAGE_KEY, 'true');
-
-            const timeSpentSeconds = (30 * 60) - timeLeft;
-            const minsSpent = Math.floor(timeSpentSeconds / 60);
-            const secsSpent = timeSpentSeconds % 60;
-            const timeFormatted = `${minsSpent} دقيقة و ${secsSpent} ثانية`;
-
-            document.getElementById('studentFinalName').textContent = `الطالب: ${studentName}`;
+            document.getElementById('studentFinalName').textContent = `الطالب/ة: ${studentName}`;
             document.getElementById('finalScore').textContent = `الدرجة: ${totalScore} من 25`;
-            document.getElementById('finalTime').textContent = `الوقت المستغرق: ${timeFormatted}`;
+            document.getElementById('finalTime').textContent = `الوقت المستغرق: ${formattedTime}`;
 
-            if (totalScore >= 20) {
-                try {
-                    encouragingAudio.play();
-                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                } catch(e) {}
+            // إطلاق تأثير الاحتفال (Confetti)
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
             }
 
-            // إرسال البيانات إلى Google Sheets
+            // إرسال البيانات لجوجل شيت وجلب لوحة الأوائل
+            await sendDataAndFetchLeaderboard(studentName, totalScore, formattedTime);
+        }
+
+        async function sendDataAndFetchLeaderboard(name, score, timeStr) {
+            const leaderboardBody = document.getElementById('leaderboardBody');
+            leaderboardBody.innerHTML = `<tr><td colspan="4">جاري تحميل البيانات وترتيب اللوحة...</td></tr>`;
+
             try {
-                const payload = {
-                    name: studentName,
-                    score: totalScore,
-                    time: timeFormatted,
-                    rawTime: timeSpentSeconds
-                };
+                // إرسال النتيجة الحالية
+                const postData = { name: name, score: score, time: timeStr };
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(postData)
                 });
-            } catch (e) {
-                console.error("خطأ عند حفظ النتيجة:", e);
-            }
 
-            loadLeaderboard();
-        }
-
-        async function loadLeaderboard() {
-            const tbody = document.getElementById('leaderboardBody');
-            tbody.innerHTML = "<tr><td colspan='4'>جاري تحميل جدول الأوائل...</td></tr>";
-
-            try {
+                // جلب كافة السجلات لترتيب الأوائل
                 let res = await fetch(GOOGLE_SCRIPT_URL);
                 if (res.ok) {
                     let data = await res.json();
                     
-                    // ترتيب حسب الدرجة ثم حسب أقصر وقت
-                    data.sort((a, b) => b.score - a.score || a.rawTime - b.rawTime);
-                    
-                    tbody.innerHTML = "";
-                    data.slice(0, 20).forEach((item, index) => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${index + 1}</td>
-                            <td>${item.name}</td>
-                            <td>${item.score} / 25</td>
-                            <td>${item.time}</td>
-                        `;
-                        tbody.appendChild(tr);
+                    // الترتيب: الدرجة الأعلى أولاً -> الوقت المستغرق الأقل ثانياً
+                    data.sort((a, b) => {
+                        let scoreA = parseFloat(a.score) || 0;
+                        let scoreB = parseFloat(b.score) || 0;
+                        
+                        if (scoreB !== scoreA) {
+                            return scoreB - scoreA; // ترتيب تنازلي حسب الدرجة الأعلى
+                        }
+                        
+                        // في حال التساوي في الدرجة: يتم الترتيب حسب الوقت الأقل (الأسرع)
+                        let timeA = parseTimeToSeconds(a.time);
+                        let timeB = parseTimeToSeconds(b.time);
+                        return timeA - timeB; // ترتيب تصاعدي للوقت المستغرق
                     });
+
+                    renderLeaderboard(data.slice(0, 20));
+                    renderTeacherTable(data);
                 } else {
-                    tbody.innerHTML = "<tr><td colspan='4'>تعذر تحميل لوحة الأوائل حالياً.</td></tr>";
+                    leaderboardBody.innerHTML = `<tr><td colspan="4">عذراً، تعذر جلب لوحة الأوائل حالياً.</td></tr>`;
                 }
             } catch (e) {
-                tbody.innerHTML = "<tr><td colspan='4'>حدث خطأ أثناء الاتصال بالسيرفر.</td></tr>";
+                console.error("خطأ الترتيب والاتصال:", e);
+                leaderboardBody.innerHTML = `<tr><td colspan="4">حدث خطأ في الاتصال بالخادم.</td></tr>`;
             }
         }
 
-        async function accessTeacherPanel() {
-            const password = prompt("يرجى إدخال كلمة المرور الخاصة بالأستاذ بشير:");
-            if (password === TEACHER_PASSWORD) {
+        function renderLeaderboard(topStudents) {
+            const tbody = document.getElementById('leaderboardBody');
+            tbody.innerHTML = "";
+
+            if (!topStudents || topStudents.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4">لا توجد نتائج مسجلة حتى الآن.</td></tr>`;
+                return;
+            }
+
+            topStudents.forEach((st, idx) => {
+                const tr = document.createElement('tr');
+                let badgeIcon = "";
+                if (idx === 0) badgeIcon = "🥇 ";
+                else if (idx === 1) badgeIcon = "🥈 ";
+                else if (idx === 2) badgeIcon = "🥉 ";
+
+                tr.innerHTML = `
+                    <td><strong>${badgeIcon}${idx + 1}</strong></td>
+                    <td>${st.name}</td>
+                    <td><strong style="color: var(--primary-color);">${st.score}</strong></td>
+                    <td>${st.time}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderTeacherTable(allStudents) {
+            const tbody = document.getElementById('teacherTableBody');
+            tbody.innerHTML = "";
+
+            if (!allStudents || allStudents.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3">لا يوجد طلاب مسجلون بعد.</td></tr>`;
+                return;
+            }
+
+            allStudents.forEach(st => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${st.name}</td>
+                    <td><strong>${st.score}</strong></td>
+                    <td>${st.time}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function accessTeacherPanel() {
+            const pwd = prompt("يرجى إدخال كلمة المرور الخاصة بالأستاذ بشير:");
+            if (pwd === TEACHER_PASSWORD) {
                 document.getElementById('resultScreen').classList.remove('active');
                 document.getElementById('teacherScreen').classList.add('active');
-                loadTeacherData();
-            } else if (password !== null) {
-                showCustomAlert("خطأ", "كلمة المرور غير صحيحة!", "❌");
-            }
-        }
-
-        async function loadTeacherData() {
-            const tbody = document.getElementById('teacherTableBody');
-            tbody.innerHTML = "<tr><td colspan='3'>جاري جلب جميع سجلات الطلاب...</td></tr>";
-
-            try {
-                let res = await fetch(GOOGLE_SCRIPT_URL);
-                if (res.ok) {
-                    let data = await res.json();
-                    tbody.innerHTML = "";
-                    if (data.length === 0) {
-                        tbody.innerHTML = "<tr><td colspan='3'>لا يوجد أي سجلات حالياً.</td></tr>";
-                        return;
-                    }
-                    data.forEach((item) => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${item.name}</td>
-                            <td>${item.score} / 25</td>
-                            <td>${item.time}</td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                } else {
-                    tbody.innerHTML = "<tr><td colspan='3'>فشل جلب البيانات.</td></tr>";
-                }
-            } catch (e) {
-                tbody.innerHTML = "<tr><td colspan='3'>حدث خطأ في الشبكة.</td></tr>";
+            } else if (pwd !== null) {
+                showCustomAlert("خطأ في الدخول", "كلمة المرور غير صحيحة!", "❌");
             }
         }
     </script>
