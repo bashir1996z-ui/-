@@ -193,7 +193,7 @@
             <p class="welcome-desc">تحت إشراف الأستاذ القدير بشير حميد. نتمنى لجميع طلبتنا الأعزاء التوفيق والنجاح.</p>
 
             <section class="info-grid">
-                <div class="info-card"><span class="card-icon">📋</span><span class="card-label">الأسئلة</span><span class="card-value">14 سؤالاً</span></div>
+                <div class="info-card"><span class="card-icon">📋</span><span class="card-label">الأسئلة</span><span class="card-value">13 سؤالاً</span></div>
                 <div class="info-card"><span class="card-icon">💯</span><span class="card-label">الدرجة الكلية</span><span class="card-value">25 درجة</span></div>
                 <div class="info-card"><span class="card-icon">⏱️</span><span class="card-label">وقت الاختبار</span><span class="card-value">30 دقيقة</span></div>
                 <div class="info-card"><span class="card-icon">📅</span><span class="card-label">التاريخ</span><span class="card-value">يوليو 2026م</span></div>
@@ -310,21 +310,86 @@
 
         const encouragingAudio = new Audio("https://assets.mixkit.co/active_storage/sfx/1435/1435-84.wav");
 
+        // قائمة الأسئلة الجديدة المحدثة بالكامل مع درجاتها وإجاباتها الصحيحة
         const quizQuestions = [
-            { question: "لا تأكلِ الطعامَ الفاسدَ<br>ما نوع (لا) وما علامة اعراب الفعل بعدها؟", options: ["نافية، علامة الفعل (الضمة)", "نافية، علامة الفعل (الكسرة)", "ناهية، علامة الفعل (السكون)", "ناهية، علامة الفعل (الكسرة)"], correct: 2, points: 2 },
-            { question: "قال تعالى: (لَمْ يَلِدْ وَلَمْ يُولَدْ)<br>نائب الفاعل في الآية القرآنية السابقة:", options: ["ضمير مستتر تقديره (هو)", "يولد", "لا يوجد نائب فاعل", "ضمير مستتر تقديره (أنت)"], correct: 0, points: 2 },
-            { question: "أي الجمل التالية صحيحة:", options: ["حقق لاعبينا هدفين.", "حقق لاعبونا هدفان.", "حقق لاعبونا هدفين.", "حقق لاعبينا هدفانَ."], correct: 2, points: 2 },
-            { question: "أكلَ الطفلُ تفاحةً.<br>اجعل كلمة (الطفل) مثنى، وكلمة (تفاحة) جمعًا مغيرًا ما يلزم.", options: ["أكلَ الطفلانَِ تفاحتينِ.", "أكلَ الطفلانِ تفاحتانِ.", "أكلَ الطفلينُ تفاحاتً.", "أكل الطفلانِ تفاحاتٍ."], correct: 3, points: 2 },
-            { question: "المستمعون إلى النصيحة مستفيدون.<br>ادخل على الجملة فعل يفيد الاستمرار مغيرًا ما يلزم تغيره:", options: ["ظل المستمعينَ إلى النصيحةِ مستفيدونَ.", "ظل المستمعينَ إلى النصيحةِ مستفيدينَ.", "ظل المستمعانِ إلى النصيحةِ مستفيدينِ.", "ظل المستمعونَ إلى النصيحةِ مستفيدينَ."], correct: 3, points: 2 },
-            { question: "قال تعالى: (لَن تَنالُوا البرَّ حتى تُنفقوا مما تحبون).<br>اعراب كلمة (البر):", options: ["فاعل", "مفعول به", "نائب فاعل", "اسم إن منصوب بالفتحة."], correct: 1, points: 2 },
-            { question: "كانتِ المعلماتُ ماهراتٍ في التدريس.<br>استبدل كان ب (إنَّ):", options: ["إنَّ المعلماتَ ماهراتٌ في التدريسِ.", "إنَّ المعلماتِ ماهراتُ في التدريسِ.", "إنَّ المعلماتُ ماهراتً في التدريسِ.", "إنَّ المعلماتُ ماهراتٍ في التدريسِ."], correct: 1, points: 2 },
-            { question: "الأرض العربية مهبط الرسالات.<br>اعراب كلمة (الرسالات):", options: ["جمع مؤنث سالم", "خبر مرفوع.", "مضاف إليه مجرور", "مفعول به."], correct: 2, points: 2 },
-            { question: "المواطنونَ الصالحونَ يدافعونَ عن وطنِهم.<br>استخرج الخبر من الجملة السابقة:", options: ["الصالحون.", "يدافعون.", "وطنهم.", "الجملة لا تحتوي على خبر."], correct: 1, points: 2 },
-            { question: "كرَّم المديرُ المبدعينِ.<br>ابنِ الجملة السابقة للمجهول:", options: ["كُرِمَ المبدعانِ.", "كُرِمَ المبدعونَ.", "كُرِمَ المبدعينُ.", "كُرِمَ المبدعُ."], correct: 0, points: 2 },
-            { question: "نحترمُ حقوقَ الإنسانِ.<br>عند بناء الجملة للمجهول فأي الجمل التالية صحيحة:", options: ["تُحترَمُ الإنسانُ.", "تُحترمُ حقوقَ الإنسانِ.", "تُحترَمُ حقوقُ الإنسانُ.", "تُحترَمُ حقوقُ الإنسانِ."], correct: 3, points: 2 },
-            { question: "قال تعالى: (الله نور السموات والأرض).<br>كلمة (نور):", options: ["اسم علم.", "نكرة.", "معرف بالإضافة.", "معرف بال."], correct: 2, points: 1 },
-            { question: "قال تعالى: (الله نور السموات والأرض).<br>كلمة (السموات) تُعرب:", options: ["خبر.", "مفعول به.", "مضاف إليه.", "معرف بالإضافة."], correct: 2, points: 1 },
-            { question: "لعل المتسابقَ فائزٌ.<br>اجعل المفرد في الجملة السابقة مثنى وغير ما يلزم:", options: ["لعل المتسابقينِ فائزانِ.", "لعل المتسابقانِ فائزينِ.", "لعل المتسابقينِ فائزينِ.", "لعل المتسابقانِ فائزانِ."], correct: 0, points: 1 }
+            { 
+                question: "قال تعالى: (يَا أَيُّهَا الَّذِينَ آمَنُوا لَا يَسْخَرْ قَوْمٌ مِّن قَوْمٍ عَسَى أَن يَكُونُوا خَيْرًا مِّنْهُمْ)<br>أولاً: ما نوع (لا) وما حالة الفعل بعدها؟", 
+                options: ["نافية بعدها الفعل مجزوم", "ناهية بعدها الفعل مرفوع", "ناهية بعدها الفعل مجزوم", "نافية بعدها الفعل مرفوع"], 
+                correct: 2, 
+                points: 2 
+            },
+            { 
+                question: "قال تعالى: (يَا أَيُّهَا الَّذِينَ آمَنُوا لَا يَسْخَرْ قَوْمٌ مِّن قَوْمٍ عَسَى أَن يَكُونُوا خَيْرًا مِّنْهُمْ)<br>ثانيًا: ما إعراب كلمة (قوم) في الآية القرآنية السابقة؟", 
+                options: ["فاعل", "مفعول به", "مبتدأ مرفوع بالضمة", "خبر مرفوع بالضمة"], 
+                correct: 0, 
+                points: 2 
+            },
+            { 
+                question: "قال تعالى: (يَا أَيُّهَا الَّذِينَ آمَنُوا لَا يَسْخَرْ قَوْمٌ مِّن قَوْمٍ عَسَى أَن يَكُونُوا خَيْرًا مِّنْهُمْ)<br>ثالثًا: ما إعراب كلمة (خيرًا) في الآية السابقة؟", 
+                options: ["مفعول به منصوب", "خبر كان منصوب", "مفعول مطلق لتوكيد الفعل", "اسم إن منصوب بالفتحة"], 
+                correct: 1, 
+                points: 2 
+            },
+            { 
+                question: "قال تعالى: (يَا أَيُّهَا الَّذِينَ آمَنُوا لَا يَسْخَرْ قَوْمٌ مِّن قَوْمٍ عَسَى أَن يَكُونُوا خَيْرًا مِّنْهُمْ)<br>رابعًا: ما علامة نصب الفعل المضارع في الآية الكريمة؟", 
+                options: ["الفتحة الظاهرة", "الفتحة المقدرة", "حذف النون", "لا يوجد فعل منصوب"], 
+                correct: 2, 
+                points: 1 
+            },
+            { 
+                question: "قال تعالى: (يَا أَيُّهَا الَّذِينَ آمَنُوا لَا يَسْخَرْ قَوْمٌ مِّن قَوْمٍ عَسَى أَن يَكُونُوا خَيْرًا مِّنْهُمْ)<br>خامسًا: استخرج اسم نكرة من النص القرآني:", 
+                options: ["يسخر", "قوم", "عسى", "منهم"], 
+                correct: 1, 
+                points: 2 
+            },
+            { 
+                question: "حدد الجملة الصحيحة فيما يلي:", 
+                options: ["إنّ مهندسو المشروعِ بارعينَ", "إنَّ مهندسي المشروعِ بارعونَ", "إنّ مهندسين المشروعِ بارعونَ", "إنّ مهندسونَ المشروعِ بارعينَ"], 
+                correct: 1, 
+                points: 2 
+            },
+            { 
+                question: "قال تعالى: (وَآتِ ذَا الْقُرْبَىٰ حَقَّهُ وَالْمِسْكِينَ وَابْنَ السَّبِيلِ وَلَا تُبَذِّرْ تَبْذِيرًا)<br>ما نوع الجمع لكلمة (المسكين)؟", 
+                options: ["جمع مذكر سالم", "جمع مؤنث سالم", "جمع تكسير", "لا اعرف"], 
+                correct: 2, 
+                points: 2 
+            },
+            { 
+                question: "قال تعالى: (وَآتِ ذَا الْقُرْبَىٰ حَقَّهُ وَالْمِسْكِينَ وَابْنَ السَّبِيلِ وَلَا تُبَذِّرْ تَبْذِيرًا)<br>ما إعراب (تبذر)؟", 
+                options: ["فعل مضارع منصوب", "فعل مضارع مرفوع", "فعل مضارع مجزوم", "مفعول مطلق"], 
+                correct: 2, 
+                points: 2 
+            },
+            { 
+                question: "قال تعالى: (وَآتِ ذَا الْقُرْبَىٰ حَقَّهُ وَالْمِسْكِينَ وَابْنَ السَّبِيلِ وَلَا تُبَذِّرْ تَبْذِيرًا)<br>الاسم المعرف بالإضافة في الآية المباركة هو:", 
+                options: ["القربى", "آتِ", "السبيل", "ابن"], 
+                correct: 3, 
+                points: 2 
+            },
+            { 
+                question: "قال تعالى: (وَآتِ ذَا الْقُرْبَىٰ حَقَّهُ وَالْمِسْكِينَ وَابْنَ السَّبِيلِ وَلَا تُبَذِّرْ تَبْذِيرًا)<br>ما إعراب كلمة (السبيل)؟", 
+                options: ["مفعول به", "خبر", "مضاف إليه", "معرف بالإضافة"], 
+                correct: 2, 
+                points: 2 
+            },
+            { 
+                question: "قال تعالى: (إذَا رُجَّتِ الْأَرْضُ رَجًّا)<br>أولاً: ما إعراب كلمة (الأرض)؟", 
+                options: ["فاعل", "مفعول به", "نائب فاعل", "خبر مرفوع"], 
+                correct: 2, 
+                points: 2 
+            },
+            { 
+                question: "قال تعالى: (إذَا رُجَّتِ الْأَرْضُ رَجًّا)<br>ثانيًا: ما نوع المفعول الوارد في الآية السابقة؟", 
+                options: ["مفعول به", "مفعول فيه", "مفعول مطلق لبيان نوع الفعل", "مفعول مطلق لتوكيد الفعل"], 
+                correct: 3, 
+                points: 2 
+            },
+            { 
+                question: "أي الكلمات التالية ليست اسم علم؟", 
+                options: ["شط العرب", "فاطمة", "المدرسة", "الفرات"], 
+                correct: 2, 
+                points: 2 
+            }
         ];
 
         let userAnswers = new Array(quizQuestions.length).fill(null);
@@ -589,22 +654,32 @@
             const timeFormatted = `${minsSpent} دقيقة و ${secsSpent} ثانية`;
 
             document.getElementById('studentFinalName').textContent = `الطالب: ${studentName}`;
-            document.getElementById('finalScore').textContent = `الدرجة النهائية: ${totalScore} من 25`;
+            document.getElementById('finalScore').textContent = `الدرجة: ${totalScore} من 25`;
             document.getElementById('finalTime').textContent = `الوقت المستغرق: ${timeFormatted}`;
 
             if (totalScore >= 20) {
-                confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
-                encouragingAudio.play().catch(() => {});
+                try {
+                    encouragingAudio.play();
+                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                } catch(e) {}
             }
 
+            // إرسال البيانات إلى Google Sheets
             try {
-                const formData = new FormData();
-                formData.append('name', studentName);
-                formData.append('score', totalScore);
-                formData.append('time', timeFormatted);
-                await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: formData, mode: 'no-cors' });
+                const payload = {
+                    name: studentName,
+                    score: totalScore,
+                    time: timeFormatted,
+                    rawTime: timeSpentSeconds
+                };
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
             } catch (e) {
-                console.error("خطأ أثناء حفظ النتيجة:", e);
+                console.error("خطأ عند حفظ النتيجة:", e);
             }
 
             loadLeaderboard();
@@ -618,34 +693,37 @@
                 let res = await fetch(GOOGLE_SCRIPT_URL);
                 if (res.ok) {
                     let data = await res.json();
-                    data.sort((a, b) => b.score - a.score);
+                    
+                    // ترتيب حسب الدرجة ثم حسب أقصر وقت
+                    data.sort((a, b) => b.score - a.score || a.rawTime - b.rawTime);
                     
                     tbody.innerHTML = "";
-                    const top20 = data.slice(0, 20);
-                    top20.forEach((item, index) => {
+                    data.slice(0, 20).forEach((item, index) => {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td>${index + 1}</td>
                             <td>${item.name}</td>
-                            <td><strong>${item.score}</strong></td>
-                            <td>${item.time || 'غير محدد'}</td>
+                            <td>${item.score} / 25</td>
+                            <td>${item.time}</td>
                         `;
                         tbody.appendChild(tr);
                     });
+                } else {
+                    tbody.innerHTML = "<tr><td colspan='4'>تعذر تحميل لوحة الأوائل حالياً.</td></tr>";
                 }
             } catch (e) {
-                tbody.innerHTML = "<tr><td colspan='4'>تعذر تحميل قائمة الأوائل حالياً.</td></tr>";
+                tbody.innerHTML = "<tr><td colspan='4'>حدث خطأ أثناء الاتصال بالسيرفر.</td></tr>";
             }
         }
 
-        function accessTeacherPanel() {
-            const pass = prompt("أدخل كلمة المرور الخاصة بالأستاذ بشير:");
-            if (pass === TEACHER_PASSWORD) {
+        async function accessTeacherPanel() {
+            const password = prompt("يرجى إدخال كلمة المرور الخاصة بالأستاذ بشير:");
+            if (password === TEACHER_PASSWORD) {
                 document.getElementById('resultScreen').classList.remove('active');
                 document.getElementById('teacherScreen').classList.add('active');
                 loadTeacherData();
-            } else if (pass !== null) {
-                showCustomAlert("خطأ في كلمة المرور", "كلمة المرور غير صحيحة!", "❌");
+            } else if (password !== null) {
+                showCustomAlert("خطأ", "كلمة المرور غير صحيحة!", "❌");
             }
         }
 
@@ -658,18 +736,24 @@
                 if (res.ok) {
                     let data = await res.json();
                     tbody.innerHTML = "";
-                    data.forEach(item => {
+                    if (data.length === 0) {
+                        tbody.innerHTML = "<tr><td colspan='3'>لا يوجد أي سجلات حالياً.</td></tr>";
+                        return;
+                    }
+                    data.forEach((item) => {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td>${item.name}</td>
-                            <td><strong>${item.score}</strong></td>
-                            <td>${item.time || 'غير محدد'}</td>
+                            <td>${item.score} / 25</td>
+                            <td>${item.time}</td>
                         `;
                         tbody.appendChild(tr);
                     });
+                } else {
+                    tbody.innerHTML = "<tr><td colspan='3'>فشل جلب البيانات.</td></tr>";
                 }
             } catch (e) {
-                tbody.innerHTML = "<tr><td colspan='3'>حدث خطأ أثناء تحميل البيانات.</td></tr>";
+                tbody.innerHTML = "<tr><td colspan='3'>حدث خطأ في الشبكة.</td></tr>";
             }
         }
     </script>
