@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -49,7 +49,6 @@
 
         .container { max-width: 900px; width: 95%; margin: 30px auto; background: #ffffff; padding: 40px 30px; border-radius: 24px; box-shadow: var(--shadow); border: 1px solid rgba(13, 148, 136, 0.08); text-align: center; }
         
-        /* التحكم بإخفاء الشاشات وإظهار النشطة فقط */
         .screen { display: none !important; }
         .screen.active { display: block !important; }
 
@@ -143,13 +142,14 @@
             margin-bottom: 15px;
         }
 
+        /* تنسيقات زر وقناة التليجرام مع إصبع الإشارة المتحرك */
         .social-buttons-wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
+            gap: 20px;
             flex-wrap: wrap;
-            margin-top: 15px;
+            margin-top: 25px;
         }
 
         .telegram-container {
@@ -159,13 +159,15 @@
 
         .pointing-finger {
             position: absolute;
-            top: -38px;
+            top: -42px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 2rem;
-            animation: pointDown 1s infinite alternate ease-in-out;
+            font-size: 2.2rem;
+            color: #f59e0b; /* لون ذهبي بارز للإصبع */
+            animation: pointDown 0.8s infinite alternate ease-in-out;
             pointer-events: none;
             z-index: 10;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
         }
 
         @keyframes pointDown {
@@ -173,9 +175,11 @@
             100% { transform: translate(-50%, 12px); }
         }
 
-        .social-btn { text-decoration: none; padding: 14px 30px; border-radius: 16px; color: #ffffff; display: inline-flex; align-items: center; gap: 10px; font-size: 1.1rem; font-weight: 700; margin: 5px; }
-        .btn-telegram { background-color: var(--telegram-color); }
-        .btn-youtube { background-color: var(--youtube-color); }
+        .social-btn { text-decoration: none; padding: 14px 30px; border-radius: 16px; color: #ffffff; display: inline-flex; align-items: center; gap: 10px; font-size: 1.1rem; font-weight: 700; transition: var(--transition); }
+        .btn-telegram { background-color: var(--telegram-color); box-shadow: 0 4px 12px rgba(34, 158, 217, 0.3); }
+        .btn-telegram:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(34, 158, 217, 0.4); }
+        .btn-youtube { background-color: var(--youtube-color); box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2); }
+        .btn-youtube:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(255, 0, 0, 0.3); }
 
         .custom-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -226,7 +230,7 @@
                 <div class="info-card"><span class="card-icon">📋</span><span class="card-label">الأسئلة</span><span class="card-value">13 سؤالاً</span></div>
                 <div class="info-card"><span class="card-icon">💯</span><span class="card-label">الدرجة الكلية</span><span class="card-value">25 درجة</span></div>
                 <div class="info-card"><span class="card-icon">⏱️</span><span class="card-label">وقت الاختبار</span><span class="card-value">30 دقيقة</span></div>
-                <div class="info-card"><span class="card-icon">📅</span><span class="card-label">التاريخ</span><span class="card-value">يوليو 2026م</span></div>
+                <div class="info-card"><span class="card-icon">📅</span><span class="card-label">التاريخ</span><span class="card-value">أغسطس 2026م</span></div>
             </section>
 
             <section class="input-box">
@@ -278,12 +282,17 @@
                 📢 سيتم نشر الدرجات والأجوبة الصحيحة على قناة الأستاذ في التلكرام
             </div>
 
+            <!-- زر التليجرام واليوتيوب مع إصبع الإشارة الملون والمتحرك -->
             <div class="social-buttons-wrapper">
                 <div class="telegram-container">
                     <div class="pointing-finger">👇</div>
-                    <a href="https://t.me/sm_3rd" target="_blank" class="social-btn btn-telegram">تليجرام</a>
+                    <a href="https://t.me/sm_3rd" target="_blank" class="social-btn btn-telegram">
+                        <i class="fa-brands fa-telegram"></i> قناة التليجرام
+                    </a>
                 </div>
-                <a href="https://www.youtube.com/@Bashir_6123" target="_blank" class="social-btn btn-youtube">يوتيوب</a>
+                <a href="https://www.youtube.com/@Bashir_6123" target="_blank" class="social-btn btn-youtube">
+                    <i class="fa-brands fa-youtube"></i> قناة اليوتيوب
+                </a>
             </div>
         </div>
 
@@ -328,9 +337,9 @@
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxXjagtQaENZBXGQxPnCGt6A2cZhToGQziTiUZzVHY3bvKwgfgM0DlD1F_jlRlVVH7r/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzwWNcIe9VGB4PTFZ9yhUTw9HPNThhBfrlH8HsiXgrS0JQDo7wFK49oPm-qyhPjkvNxbA/exec";
         const TEACHER_PASSWORD = "19961996";
-        const EXAM_STORAGE_KEY = "arabic_quiz_2026_exam_v2";
+        const EXAM_STORAGE_KEY = "arabic_quiz_2026_submitted_names";
 
         const QUESTIONS_PER_PAGE = 3; 
         let currentPageIndex = 0; 
@@ -469,7 +478,8 @@
             onConfirmCallback = async function() {
                 try {
                     await fetch(GOOGLE_SCRIPT_URL + "?clear=true", { method: 'POST', mode: 'no-cors' });
-                    showCustomAlert("نجاح العملية", "تم تصفير وحذف جميع نتائج الطلاب بنجاح من جوجل شيت.", "✅");
+                    localStorage.removeItem(EXAM_STORAGE_KEY);
+                    showCustomAlert("نجاح العملية", "تم تصفير وحذف جميع نتائج الطلاب بنجاح من جوجل شيت والذاكرة.", "✅");
                     setTimeout(() => location.reload(), 1500);
                 } catch(e) {
                     showCustomAlert("خطأ", "تعذر مسح البيانات السحابية.", "❌");
@@ -483,33 +493,40 @@
             onConfirmCallback = null;
         }
 
+        /**
+         * تنظيف وتوحيد الاسم لمنع التحايل بتغيير الأحرف أو المسافات أو الفوارز
+         */
         function normalizeArabicName(name) {
             if (!name) return "";
             let normalized = name.trim();
+            // إزالة التشكيل
             normalized = normalized.replace(/[\u064B-\u0652]/g, "");
+            // توحيد الهمزات والألف
             normalized = normalized.replace(/[أإآ]/g, "ا");
+            // توحيد الياء والتاء المربوطة
             normalized = normalized.replace(/ي/g, "ى");
             normalized = normalized.replace(/ة/g, "ه");
+            // إزالة جميع علامات الترقيم والفوارز والرموز
             normalized = normalized.replace(/[.\-_,،؛؟\/\\()\[\]{}*&^%$#@!+=\dـ]/g, "");
+            // دمج المسافات المتعددة مسافة واحدة
             normalized = normalized.replace(/\s+/g, " ");
             return normalized.trim();
         }
 
-        // دالة تحويل نص الوقت (مثال: "04:15" أو "4 دقيقة و 15 ثانية") إلى ثوانٍ لغرض الفرز والترتيب
+        /**
+         * تحويل نص الوقت إلى ثوانٍ للفرز والترتيب
+         */
         function parseTimeToSeconds(timeStr) {
             if (!timeStr) return 999999;
             if (typeof timeStr === 'number') return timeStr;
             
             let str = String(timeStr).trim();
-            
-            // حالة صيغة mm:ss أو hh:mm:ss
             if (str.includes(':')) {
                 let parts = str.split(':').map(p => parseInt(p, 10) || 0);
                 if (parts.length === 2) return parts[0] * 60 + parts[1];
                 if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
             }
             
-            // استخراج الأرقام إذا كان النص مفسراً بالكلمات
             let numbers = str.match(/\d+/g);
             if (numbers) {
                 if (numbers.length >= 2) {
@@ -525,18 +542,23 @@
             studentName = document.getElementById('studentName').value.trim();
             const errorElement = document.getElementById('errorMsg');
 
-            if (localStorage.getItem(EXAM_STORAGE_KEY) === 'true') {
-                const isTeacher = (studentName === "الأستاذ بشير حميد" || studentName === "الاستاذ بشير حميد");
-                if (!isTeacher) {
-                    errorElement.innerText = "⚠️ عذراً! لقد قمت بتقديم هذا الامتحان مسبقاً من هذا الجهاز.";
-                    errorElement.style.display = "block";
-                    return;
-                }
-            }
-
+            // التحقق من أن الاسم ثلاثي فقط
             const words = studentName.split(/\s+/).filter(w => w.length > 0);
             if (words.length !== 3) {
                 errorElement.innerText = "⚠️ يرجى كتابة اسمك الثلاثي فقط (3 كلمات بالضبط دون زيادة أو نقصان).";
+                errorElement.style.display = "block";
+                return;
+            }
+
+            const normInput = normalizeArabicName(studentName);
+            const teacher1 = normalizeArabicName("الأستاذ بشير حميد");
+            const teacher2 = normalizeArabicName("الاستاذ بشير حميد");
+            const isTeacher = (normInput === teacher1 || normInput === teacher2);
+
+            // 1. التحقق من التخزين المحلي للجهاز (مستنداً للأسماء المقترنة)
+            let submittedNamesLocal = JSON.parse(localStorage.getItem(EXAM_STORAGE_KEY) || "[]");
+            if (!isTeacher && submittedNamesLocal.includes(normInput)) {
+                errorElement.innerText = "⚠️ عذراً! لقد قمت بأداء هذا الامتحان مسبقاً من هذا الجهاز ولا يُسمح بالإعادة.";
                 errorElement.style.display = "block";
                 return;
             }
@@ -545,18 +567,15 @@
             btn.disabled = true;
             btn.innerHTML = "جاري التحقق من الاسم...";
 
+            // 2. التحقق من السحابة (Google Sheet)
             try {
-                const normInput = normalizeArabicName(studentName);
-                const teacher1 = normalizeArabicName("الأستاذ بشير حميد");
-                const teacher2 = normalizeArabicName("الاستاذ بشير حميد");
-
-                if (normInput !== teacher1 && normInput !== teacher2) {
+                if (!isTeacher) {
                     let checkRes = await fetch(GOOGLE_SCRIPT_URL);
                     if (checkRes.ok) {
                         let records = await checkRes.json();
-                        let found = records.some(r => normalizeArabicName(r.name) === normInput);
-                        if (found) {
-                            errorElement.innerText = "⚠️ عذراً يا بطل! هذا الاسم قد أدى الامتحان سابقاً، ولا يُسمح بإعادة الاختبار.";
+                        let foundInSheet = records.some(r => normalizeArabicName(r.name) === normInput);
+                        if (foundInSheet) {
+                            errorElement.innerText = "⚠️ عذراً يا بطل! هذا الاسم مسجل مسبقاً في نتائج الامتحان، ولا يُسمح بإعادة الاختبار.";
                             errorElement.style.display = "block";
                             btn.disabled = false;
                             btn.innerHTML = "بدء الاختبار ◀";
@@ -695,7 +714,7 @@
             clearInterval(timerInterval);
             isExamActive = false;
 
-            // حساب الدرجة النهائية
+            // 1. حساب الدرجة الكلية
             totalScore = 0;
             quizQuestions.forEach((q, idx) => {
                 if (userAnswers[idx] === q.correct) {
@@ -703,21 +722,25 @@
                 }
             });
 
-            // حساب الوقت المستغرق
+            // 2. حساب الوقت المستغرق
             const timeSpentSeconds = TOTAL_EXAM_TIME - timeLeft;
             const minutesSpent = Math.floor(timeSpentSeconds / 60);
             const secondsSpent = timeSpentSeconds % 60;
             const formattedTime = `${minutesSpent.toString().padStart(2, '0')}:${secondsSpent.toString().padStart(2, '0')}`;
 
-            // حفظ التقديم في المتصفح لمنع التكرار
+            // 3. حفظ اسم الطالب المنظم محلياً لمنع التكرار على هذا الجهاز
             const normInput = normalizeArabicName(studentName);
             const teacher1 = normalizeArabicName("الأستاذ بشير حميد");
             const teacher2 = normalizeArabicName("الاستاذ بشير حميد");
             if (normInput !== teacher1 && normInput !== teacher2) {
-                localStorage.setItem(EXAM_STORAGE_KEY, 'true');
+                let submittedNamesLocal = JSON.parse(localStorage.getItem(EXAM_STORAGE_KEY) || "[]");
+                if (!submittedNamesLocal.includes(normInput)) {
+                    submittedNamesLocal.push(normInput);
+                    localStorage.setItem(EXAM_STORAGE_KEY, JSON.stringify(submittedNamesLocal));
+                }
             }
 
-            // إظهار النتائج للحيّز المستخدم
+            // إظهار شاشة النتائج
             document.getElementById('quizScreen').classList.remove('active');
             document.getElementById('resultScreen').classList.add('active');
 
@@ -725,21 +748,20 @@
             document.getElementById('finalScore').textContent = `الدرجة: ${totalScore} من 25`;
             document.getElementById('finalTime').textContent = `الوقت المستغرق: ${formattedTime}`;
 
-            // إطلاق تأثير الاحتفال (Confetti)
             if (typeof confetti === 'function') {
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
             }
 
-            // إرسال البيانات لجوجل شيت وجلب لوحة الأوائل
+            // إرسال البيانات وسحب لوحة الأوائل المرتبة
             await sendDataAndFetchLeaderboard(studentName, totalScore, formattedTime);
         }
 
         async function sendDataAndFetchLeaderboard(name, score, timeStr) {
             const leaderboardBody = document.getElementById('leaderboardBody');
-            leaderboardBody.innerHTML = `<tr><td colspan="4">جاري تحميل البيانات وترتيب اللوحة...</td></tr>`;
+            leaderboardBody.innerHTML = `<tr><td colspan="4">جاري تسجيل درجتك وجلب قائمة الأوائل...</td></tr>`;
 
             try {
-                // إرسال النتيجة الحالية
+                // إرسال البيانات للـ Google Sheet
                 const postData = { name: name, score: score, time: timeStr };
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
@@ -748,12 +770,12 @@
                     body: JSON.stringify(postData)
                 });
 
-                // جلب كافة السجلات لترتيب الأوائل
+                // جلب القائمة الكاملة
                 let res = await fetch(GOOGLE_SCRIPT_URL);
                 if (res.ok) {
                     let data = await res.json();
                     
-                    // الترتيب: الدرجة الأعلى أولاً -> الوقت المستغرق الأقل ثانياً
+                    // فرز قائمة الأوائل: الدرجة الأعلى أولاً -> الوقت المستغرق الأقل ثانياً
                     data.sort((a, b) => {
                         let scoreA = parseFloat(a.score) || 0;
                         let scoreB = parseFloat(b.score) || 0;
@@ -762,16 +784,16 @@
                             return scoreB - scoreA; // ترتيب تنازلي حسب الدرجة الأعلى
                         }
                         
-                        // في حال التساوي في الدرجة: يتم الترتيب حسب الوقت الأقل (الأسرع)
+                        // في حالة التساوي في الدرجات يتم المقارنة بالوقت الأسرع (الأقل)
                         let timeA = parseTimeToSeconds(a.time);
                         let timeB = parseTimeToSeconds(b.time);
-                        return timeA - timeB; // ترتيب تصاعدي للوقت المستغرق
+                        return timeA - timeB; 
                     });
 
                     renderLeaderboard(data.slice(0, 20));
                     renderTeacherTable(data);
                 } else {
-                    leaderboardBody.innerHTML = `<tr><td colspan="4">عذراً، تعذر جلب لوحة الأوائل حالياً.</td></tr>`;
+                    leaderboardBody.innerHTML = `<tr><td colspan="4">عذراً، تعذر تحميل لوحة الأوائل حالياً.</td></tr>`;
                 }
             } catch (e) {
                 console.error("خطأ الترتيب والاتصال:", e);
