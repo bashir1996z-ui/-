@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الذكاء والقدرات العقلية الأول 🧠</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- استدعاء خط Cairo للواجهة وخط Aref Ruqaa لاسم الأستاذ بخط مرسوم -->
+    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        .font-calligraphy { font-family: 'Aref Ruqaa', serif; }
+        .btn-bounce:active { transform: scale(0.97); }
+        .pulse-icon { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-100 via-blue-50 to-red-50 min-h-screen flex flex-col items-center justify-start p-3 sm:p-6 text-slate-700 pt-28 sm:pt-28">
+
+    <!-- الشريط العلوي الأزرق -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-700 via-blue-600 to-blue-800 text-white shadow-md border-b-2 border-red-500 px-3 py-2 sm:py-3">
+        <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-right">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl pulse-icon">🎯</span>
+                <p class="text-xs sm:text-sm font-extrabold leading-tight">
+                    انضم إلى قناة <span class="text-amber-300 font-calligraphy text-base sm:text-xl px-1">الأستاذ بشير حميد</span> على التلكرام، واستفد من الشروحات والاختبارات!
+                </p>
+            </div>
+            <a href="https://t.me/sm_3rd" target="_blank" rel="noopener noreferrer" class="btn-bounce bg-red-600 hover:bg-red-700 text-white font-black text-xs sm:text-sm px-4 py-1.5 rounded-full shadow-sm border border-red-400 transition flex items-center gap-1.5 whitespace-nowrap">
+                <span>📲 اضغط للانضمام للقناة الرسمية</span>
+                <span>👈</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- الحاوية الرئيسية -->
+    <div class="bg-white/90 backdrop-blur-md border-2 border-slate-200 w-full max-w-3xl rounded-3xl shadow-xl p-5 sm:p-8 relative overflow-hidden my-auto">
+        
+        <!-- الهيدر الداخلي باللونين الأزرق والأحمر -->
+        <div class="bg-gradient-to-r from-blue-600 via-blue-700 to-red-600 rounded-2xl p-4 text-white shadow-md mb-6 text-center relative overflow-hidden">
+            <div class="absolute -right-4 -bottom-4 text-white/10 text-8xl font-black select-none">IQ</div>
+            <h1 class="text-xl sm:text-3xl font-black tracking-wide flex items-center justify-center gap-2">
+                <span>🧠</span> اختبار الذكاء والقدرات العقلية الأول
+            </h1>
+            <p class="text-xs sm:text-sm text-blue-100 mt-1 font-semibold">
+                إعداد وشروحات: <span class="font-calligraphy text-lg text-amber-300">الأستاذ بشير حميد</span>
+            </p>
+        </div>
+
+        <!-- واجهة إدخال الاسم والبدء -->
+        <div id="start-screen" class="py-4">
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 mb-6 text-center">
+                <h2 class="text-lg sm:text-xl font-black text-slate-800 mb-2">أهلاً بك في اختبار القدرات العقلية</h2>
+                <p class="text-xs sm:text-sm text-slate-600 font-bold mb-4">يرجى كتابة اسمك الرباعي باللغة العربية للبدء في الاختبار.</p>
+                
+                <div class="max-w-md mx-auto text-right">
+                    <label class="block text-xs font-black text-slate-700 mb-1">الاسم الرباعي (باللغة العربية حصرًا):</label>
+                    <input type="text" id="student-name-input" placeholder="مثال: أحمد محمد علي حسين" 
+                           class="w-full p-3.5 border-2 border-slate-300 rounded-xl focus:border-blue-600 focus:outline-none text-slate-800 font-bold text-sm sm:text-base mb-2">
+                    <p id="registration-error" class="text-red-600 font-bold text-xs hidden mb-3"></p>
+                    
+                    <button onclick="startQuiz()" class="btn-bounce w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-base sm:text-lg py-3.5 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                        <span>بدء الاختبار</span>
+                        <span>🚀</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- شاشة الأسئلة -->
+        <div id="quiz-screen" class="hidden">
+            <div class="flex justify-between items-center bg-slate-50 p-3 sm:p-4 rounded-2xl border border-slate-200 mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl sm:text-3xl pulse-icon">⭐</span>
+                    <span id="score-display" class="text-xl sm:text-2xl font-black text-blue-700">0</span>
+                    <span class="text-xs sm:text-sm font-bold text-slate-500">من 20</span>
+                </div>
+                <div class="bg-red-50 px-3 py-1.5 rounded-full border border-red-200">
+                    <span id="question-tracker" class="text-xs sm:text-sm font-extrabold text-red-800">السؤال 1 من 20</span>
+                </div>
+            </div>
+
+            <!-- شريط التقدم -->
+            <div class="w-full bg-slate-100 h-3 rounded-full mb-6 overflow-hidden border border-slate-200">
+                <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-red-500 h-full w-0 transition-all duration-300"></div>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 mb-5 shadow-sm text-center">
+                <h2 id="question-text" class="text-lg sm:text-2xl font-black text-slate-800 leading-relaxed">
+                    جاري تحميل السؤال...
+                </h2>
+            </div>
+
+            <div id="feedback" class="text-center font-bold text-sm sm:text-base min-h-[36px] mb-4 transition-all"></div>
+
+            <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-6"></div>
+
+            <div class="flex justify-end">
+                <button id="next-btn" onclick="nextQuestion()" class="hidden btn-bounce bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-base sm:text-lg px-7 py-3 rounded-2xl shadow-md border-b-4 border-blue-800 transition flex items-center gap-2">
+                    <span>السؤال التالي</span>
+                    <span>⬅️</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- شاشة النتيجة النهائية والشريط الخاص بالتلكرام -->
+        <div id="result-screen" class="hidden text-center py-6">
+            <div id="badge-container" class="mb-4"></div>
+            <h2 id="student-greeting" class="text-xl sm:text-2xl font-black text-slate-700 mb-1"></h2>
+            <h3 id="result-title" class="text-2xl sm:text-4xl font-black text-slate-800 mb-2"></h3>
+            
+            <div class="bg-slate-50 border border-slate-200 rounded-3xl p-6 max-w-sm mx-auto mb-6 shadow-sm">
+                <div class="text-xs font-bold text-blue-600 mb-1">النتيجة النهائية</div>
+                <div class="text-4xl sm:text-5xl font-black text-blue-800 mb-2" id="final-score">0 / 20</div>
+                <div class="text-xl font-extrabold text-red-600 border-t border-slate-200 pt-2" id="final-percentage">0%</div>
+                <div class="text-base font-black text-slate-700 mt-2" id="final-status"></div>
+            </div>
+
+            <div class="flex justify-center gap-4 mb-6">
+                <button onclick="restartQuiz()" class="btn-bounce bg-emerald-600 hover:bg-emerald-700 text-white font-black text-base px-6 py-3 rounded-2xl shadow-md transition flex items-center gap-2">
+                    <span>إعادة الاختبار 🔄</span>
+                </button>
+            </div>
+
+            <!-- دعوة الانضمام للقناة -->
+            <div class="bg-gradient-to-r from-blue-600 via-blue-700 to-red-600 text-white p-5 rounded-3xl shadow-lg max-w-md mx-auto text-center border-2 border-amber-300">
+                <p class="font-black text-base sm:text-lg mb-2 leading-relaxed">
+                    ✨ سيتم نشر المزيد من الاختبارات الشاملة والملفات التعليمية على قناة <span class="font-calligraphy text-amber-300 text-xl px-1">الأستاذ بشير حميد</span>!
+                </p>
+                <p class="text-xs sm:text-sm text-blue-100 font-semibold mb-4">سارع بالانضمام عبر الرابط التالي لمتابعة كل جديد:</p>
+                <a href="https://t.me/sm_3rd" target="_blank" rel="noopener noreferrer" class="btn-bounce inline-flex items-center justify-center gap-2 bg-amber-400 hover:bg-amber-300 text-blue-950 font-black text-sm sm:text-base px-6 py-2.5 rounded-full shadow-md transition border border-amber-200">
+                    <span>📲 انضم لقناة التلكرام الرسمية</span>
+                    <span>👈</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const questionsData = [
+            { question: "السؤال 1: أوجد العدد الناقص: 4 ، 7 ، 13 ، 22 ، 34 ، ؟", options: ["أ) 47", "ب) 49", "ج) 50", "د) 52"], correct: 1, explanation: "التوضيح: الفروق (+3، +6، +9، +12) ➔ إضافة +15 ➔ (34 + 15 = 49)." },
+            { question: "السؤال 2: إذا كان كل الطيور لها أجنحة، والعصفور طائر. فأي العبارات صحيحة؟", options: ["أ) كل ما له أجنحة عصفور.", "ب) العصفور له أجنحة.", "ج) جميع الطيور عصافير.", "د) لا يمكن معرفة ذلك."], correct: 1, explanation: "التوضيح: منطقياً، العصفور له أجنحة." },
+            { question: "السؤال 3: وقف خمسة طلاب في صف. محمد أمام علي، وعلي أمام حسن. فمن الأقرب إلى مقدمة الصف؟", options: ["أ) حسن", "ب) علي", "ج) محمد", "د) لا يمكن تحديده"], correct: 2, explanation: "التوضيح: الترتيب: محمد ⬅️ علي ⬅️ حسن." },
+            { question: "السؤال 4: احسب الناتج: 18 ÷ 3 + 5 × 4 = ؟", options: ["أ) 26", "ب) 28", "ج) 30", "د) 44"], correct: 0, explanation: "التوضيح: 6 + 20 = 26." },
+            { question: "السؤال 5: إذا كان عمر خالد يساوي ضعف عمر أخيه، وكان مجموع عمريهما 27 سنة. فكم عمر خالد؟", options: ["أ) 9", "ب) 12", "ج) 18", "د) 21"], correct: 2, explanation: "التوضيح: 3س = 27 ➔ س=9 (الأخ). خالد = 18 سنة." },
+            { question: "السؤال 6: أي الكلمات التالية لا تنتمي إلى المجموعة؟", options: ["أ) برتقال", "ب) تفاح", "ج) موز", "د) بطاطا"], correct: 3, explanation: "التوضيح: البطاطا خضروات وليس فاكهة." },
+            { question: "السؤال 7: إذا تحركت خطوة إلى الشرق ثم خطوتين إلى الشمال ثم خطوة إلى الغرب، فأنت أصبحت:", options: ["أ) شمال نقطة البداية", "ب) جنوبها", "ج) شرقها", "د) غربها"], correct: 0, explanation: "التوضيح: خطوتان للشمال فقط." },
+            { question: "السؤال 8: اشترى أحمد ثلاثة دفاتر وقلمين. إذا كان سعر الدفتر 1500 دينار، وسعر القلم 1000 دينار. فكم دفع؟", options: ["أ) 5500", "ب) 6500", "ج) 7000", "د) 7500"], correct: 1, explanation: "التوضيح: 4500 + 2000 = 6500 دينار." },
+            { question: "السؤال 9: أحمد أكبر من صديقه بـ 21 يوماً، فإذا كان أحمد قد ولد في يوم الأحد، ففي أي يوم ولد صديقه؟", options: ["أ) السبت", "ب) الأحد", "ج) الاثنين", "د) الثلاثاء"], correct: 1, explanation: "التوضيح: 21 يوماً = 3 أسابيع كاملة ➔ يوم الأحد." },
+            { question: "السؤال 10: إذا كان ترتيب علي الخامس من الأمام، والرابع من الخلف. فكم عدد الطلاب؟", options: ["أ) 7", "ب) 8", "ج) 9", "د) 10"], correct: 1, explanation: "التوضيح: (5 + 4) - 1 = 8 طلاب." },
+            { question: "السؤال 11: أوجد العدد الناقص: 3 ، 6 ، 12 ، 24 ، ؟", options: ["أ) 36", "ب) 42", "ج) 48", "د) 50"], correct: 2, explanation: "التوضيح: الضرب في 2 ➔ 24 × 2 = 48." },
+            { question: "السؤال 12: في سباق، كان أحمد أمام علي، وعلي أمام كريم، وكريم خلف عمر. من هو الأخير؟", options: ["أ) أحمد", "ب) عمر", "ج) كريم", "د) علي"], correct: 2, explanation: "التوضيح: الكريم هو الأخير." },
+            { question: "السؤال 13: إذا كانت جميع الأقلام زرقاء، وبعض الأدوات المدرسية أقلام، فأي العبارات صحيحة؟", options: ["أ) جميع الأدوات المدرسية زرقاء.", "ب) بعض الأدوات المدرسية زرقاء.", "ج) لا يوجد قلم أزرق.", "د) جميع الأشياء الزرقاء أقلام."], correct: 1, explanation: "التوضيح: بعض الأدوات المدرسية زرقاء." },
+            { question: "السؤال 14: إذا كانت الساعة الآن الواحدة ظهرًا، فماذا ستكون بعد 17 ساعة؟", options: ["أ) الخامسة صباحًا", "ب) السادسة صباحًا", "ج) السابعة صباحًا", "د) الثامنة صباحًا"], correct: 1, explanation: "التوضيح: 1 ظهراً + 17 ساعة = 6:00 صباحاً." },
+            { question: "السؤال 15: اشترى سعيد 4 دفاتر و3 أقلام. إذا كان سعر الدفتر 2000 دينار وسعر القلم 1000 دينار، فكم دفع؟", options: ["أ) 9000", "ب) 10000", "ج) 11000", "د) 12000"], correct: 2, explanation: "التوضيح: 8000 + 3000 = 11000 دينار." },
+            { question: "السؤال 16: أي الكلمات التالية تختلف عن البقية؟", options: ["أ) بغداد", "ب) البصرة", "ج) أربيل", "د) الفرات"], correct: 3, explanation: "التوضيح: الفرات نهر والبقية مدن." },
+            { question: "السؤال 17: إذا كان محمد أطول من علي، وعلي أطول من حسن. فمن الأقصر؟", options: ["أ) محمد", "ب) حسن", "ج) علي", "د) لا يمكن تحديده"], correct: 1, explanation: "التوضيح: حسن هو الأقصر." },
+            { question: "السؤال 18: سعد أصغر من أخيه بـ 16 يوماً، فإذا كان الأخ قد ولد يوم الجمعة، ففي أي يوم ولد سعد؟", options: ["أ) الأحد", "ب) السبت", "ج) الاثنين", "د) الثلاثاء"], correct: 0, explanation: "التوضيح: 16 يوماً = 14 يوماً (أسبوعان) + يومين ➔ الجمعة + 2 = الأحد." },
+            { question: "السؤال 19: إذا كانت: 8 + 16 = 24 | 16 + 32 = 48 | 32 + 64 = ؟", options: ["أ) 84", "ب) 90", "ج) 96", "د) 100"], correct: 2, explanation: "التوضيح: 32 + 64 = 96." },
+            { question: "السؤال 20: في صندوق: 5 كرات حمراء، 4 زرقاء، 3 خضراء. كم عدد الكرات جميعها؟", options: ["أ) 10", "ب) 11", "ج) 12", "د) 13"], correct: 2, explanation: "التوضيح: 5 + 4 + 3 = 12 كرة." }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let studentName = "";
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(146.83, audioCtx.currentTime + 0.12);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.35);
+            }
+        }
+
+        function startQuiz() {
+            const inputEl = document.getElementById('student-name-input');
+            const errorEl = document.getElementById('registration-error');
+            const rawName = inputEl.value.trim();
+
+            errorEl.classList.add('hidden');
+
+            const arabicPattern = /^[\u0600-\u06FF\s]+$/;
+            if (!arabicPattern.test(rawName)) {
+                errorEl.innerText = "❌ يرجى كتابة الاسم باللغة العربية حصرًا بدون حروف أو أرقام إنجليزية!";
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            const words = rawName.split(/\s+/).filter(w => w.length > 0);
+            if (words.length < 4) {
+                errorEl.innerText = "❌ يرجى كتابة الاسم الرباعي كاملاً (4 كلمات على الأقل)!";
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            studentName = rawName;
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById('score-display').innerText = "0";
+
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const currentQ = questionsData[currentQuestionIndex];
+            document.getElementById('question-text').innerText = currentQ.question;
+            document.getElementById('question-tracker').innerText = `السؤال ${currentQuestionIndex + 1} من ${questionsData.length}`;
+            document.getElementById('feedback').innerHTML = '';
+            document.getElementById('next-btn').classList.add('hidden');
+
+            const progressPercent = ((currentQuestionIndex) / questionsData.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            currentQ.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-bounce bg-white hover:bg-blue-50 text-slate-700 border border-slate-200 font-extrabold text-base sm:text-lg p-4 rounded-2xl shadow-sm hover:shadow transition text-right flex items-center justify-between w-full group';
+                btn.innerHTML = `<span class="group-hover:text-blue-700">${option}</span><span class="text-xs bg-slate-100 text-slate-500 group-hover:bg-blue-100 group-hover:text-blue-800 px-2.5 py-1 rounded-lg font-bold">خيار ${index + 1}</span>`;
+                btn.onclick = () => checkAnswer(index, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, btn) {
+            const currentQ = questionsData[currentQuestionIndex];
+            const feedback = document.getElementById('feedback');
+            const allButtons = document.querySelectorAll('#options-container button');
+
+            allButtons.forEach(b => b.disabled = true);
+
+            if (selectedIndex === currentQ.correct) {
+                playSound('correct');
+                score++;
+                document.getElementById('score-display').innerText = score;
+                btn.className = "btn-bounce bg-emerald-500 text-white font-extrabold text-base sm:text-lg p-4 rounded-2xl shadow-md border border-emerald-600 text-right flex items-center justify-between w-full";
+                feedback.innerHTML = `<div class="text-emerald-800 bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl"><span class="font-bold">إجابة صحيحة! أحسنت 👏 (+1 درجة)</span><div class="mt-1 text-xs sm:text-sm text-slate-600 font-normal bg-white p-2 rounded-xl border border-emerald-200">${currentQ.explanation}</div></div>`;
+            } else {
+                playSound('wrong');
+                btn.className = "btn-bounce bg-red-500 text-white font-extrabold text-base sm:text-lg p-4 rounded-2xl shadow-md border border-red-600 text-right flex items-center justify-between w-full";
+                allButtons[currentQ.correct].className = "btn-bounce bg-emerald-500 text-white font-extrabold text-base sm:text-lg p-4 rounded-2xl shadow-md border border-emerald-600 text-right flex items-center justify-between w-full";
+                feedback.innerHTML = `<div class="text-red-800 bg-red-50 border border-red-200 p-2.5 rounded-xl"><span class="font-bold">إجابة خاطئة! ❌ الإجابة الصحيحة هي: (${currentQ.options[currentQ.correct]})</span><div class="mt-1 text-xs sm:text-sm text-slate-600 font-normal bg-white p-2 rounded-xl border border-red-200">${currentQ.explanation}</div></div>`;
+            }
+
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questionsData.length) {
+                loadQuestion();
+            } else {
+                showFinalResult();
+            }
+        }
+
+        function showFinalResult() {
+            document.getElementById('progress-bar').style.width = `100%`;
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            document.getElementById('final-score').innerText = `${score} / 20`;
+            const percentage = Math.round((score / 20) * 100);
+            document.getElementById('final-percentage').innerText = `النسبة المئوية: ${percentage}%`;
+            document.getElementById('student-greeting').innerText = `الطالب: ${studentName}`;
+
+            const badgeContainer = document.getElementById('badge-container');
+            const titleEl = document.getElementById('result-title');
+            const statusEl = document.getElementById('final-status');
+
+            if (score === 20) {
+                badgeContainer.innerHTML = `<div class="inline-flex items-center justify-center w-24 h-24 bg-amber-400 text-amber-950 font-black text-4xl rounded-full border-4 border-amber-300 shadow-lg pulse-icon">🥇 1</div>`;
+                titleEl.innerText = "عبقري! 👑";
+                statusEl.innerText = "الدرجة الكاملة (20 من 20) - أداء استثنائي!";
+            } else if (score === 19) {
+                badgeContainer.innerHTML = `<div class="inline-flex items-center justify-center w-24 h-24 bg-slate-300 text-slate-800 font-black text-4xl rounded-full border-4 border-slate-200 shadow-lg pulse-icon">🥈 2</div>`;
+                titleEl.innerText = "ميدالية المرتبة الثانية 🥈";
+                statusEl.innerText = "الدرجة 19 من 20 - أداء ممتاز جداً!";
+            } else if (score === 18) {
+                badgeContainer.innerHTML = `<div class="inline-flex items-center justify-center w-24 h-24 bg-amber-600 text-white font-black text-4xl rounded-full border-4 border-amber-500 shadow-lg pulse-icon">🥉 3</div>`;
+                titleEl.innerText = "ميدالية المرتبة الثالثة 🥉";
+                statusEl.innerText = "الدرجة 18 من 20 - أداء رائع!";
+            } else if (score === 17) {
+                badgeContainer.innerHTML = `<span class="text-6xl block mb-2">⭐</span>`;
+                titleEl.innerText = "ممتاز!";
+                statusEl.innerText = "الدرجة 17 من 20 - مستوى عالي في القدرات العقلية";
+            } else if (score === 16) {
+                badgeContainer.innerHTML = `<span class="text-6xl block mb-2">👏</span>`;
+                titleEl.innerText = "جيد جداً";
+                statusEl.innerText = "الدرجة 16 من 20 - مستوى جيد جداً";
+            } else if (score === 15) {
+                badgeContainer.innerHTML = `<span class="text-6xl block mb-2">👍</span>`;
+                titleEl.innerText = "جيد";
+                statusEl.innerText = "الدرجة 15 من 20 - مستوى جيد";
+            } else {
+                badgeContainer.innerHTML = `<span class="text-6xl block mb-2">📘</span>`;
+                titleEl.innerText = "محاولة صالحة";
+                statusEl.innerText = "بحاجة لمزيد من الممارسة والتدريب على القدرات العقلية";
+            }
+
+            if (score >= 15) {
+                confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+            }
+        }
+
+        function restartQuiz() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
