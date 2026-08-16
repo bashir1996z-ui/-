@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار مصادر الفعل الرباعي المزيد</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        .btn-hover { transition: all 0.2s ease-in-out; }
+        .btn-hover:hover { transform: translateY(-2px); }
+        .correct-opt {
+            background-color: #dcfce7 !important; /* أخضر فاتح */
+            border-color: #16a34a !important; /* إطار أخضر */
+            color: #15803d !important;
+        }
+        .wrong-opt {
+            background-color: #fce7f3 !important; /* وردي */
+            border-color: #dc2626 !important; /* إطار أحمر */
+            color: #9f1239 !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen py-8 px-4 flex justify-center items-start">
+
+    <div class="bg-white w-full max-w-3xl rounded-3xl shadow-xl border border-slate-200 overflow-hidden my-auto">
+        
+        <!-- الهيدر العلوي -->
+        <header class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-6 text-center relative">
+            <div class="text-sm font-bold text-blue-200 mb-1">إعداد: أ. بشير حميد</div>
+            <h1 class="text-2xl sm:text-3xl font-black mb-2">اختبار مصادر الفعل الرباعي المزيد</h1>
+            <p class="text-xs sm:text-sm bg-blue-900/50 inline-block px-4 py-1 rounded-full border border-blue-400/30">
+                الدرجة: 100 درجة — 20 نقطة (لكل سؤال 5 درجات)
+            </p>
+        </header>
+
+        <div class="p-6 sm:p-8">
+            
+            <!-- واجهة إدخال بيانات الطالب -->
+            <div id="start-screen" class="space-y-6">
+                <div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl text-blue-900 text-sm font-bold leading-relaxed">
+                    👋 أهلاً بك عزيزي الطالب! يرجى إدخال بياناتك باللغة العربية للبدء بالاختبار.
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">اسم الطالب الثلاثي (باللغة العربية حصرًا):</label>
+                        <input type="text" id="student-name" placeholder="مثال: أحمد محمد علي" 
+                               class="w-full p-3.5 border-2 border-slate-300 rounded-xl focus:border-blue-600 focus:outline-none font-bold text-slate-800">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">الصف:</label>
+                        <input type="text" id="student-class" placeholder="مثال: الثالث المتوسط / الرابع العلمي" 
+                               class="w-full p-3.5 border-2 border-slate-300 rounded-xl focus:border-blue-600 focus:outline-none font-bold text-slate-800">
+                    </div>
+
+                    <p id="error-msg" class="text-red-600 font-bold text-sm hidden"></p>
+
+                    <button onclick="startQuiz()" class="btn-hover w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-lg py-4 rounded-xl shadow-lg transition">
+                        بدء الاختبار 🚀
+                    </button>
+                </div>
+            </div>
+
+            <!-- شاشة الأسئلة -->
+            <div id="quiz-screen" class="hidden">
+                <!-- الشريط الإحصائي -->
+                <div class="flex flex-wrap justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-200 mb-6 gap-2 text-sm font-bold">
+                    <div class="text-slate-700">اسم الطالب: <span id="display-name" class="text-blue-700"></span></div>
+                    <div class="text-slate-700">الصف: <span id="display-class" class="text-blue-700"></span></div>
+                    <div class="text-slate-700">الدرجة الحالية: <span id="current-score" class="text-emerald-600 font-black text-base">0</span> / 100</div>
+                </div>
+
+                <div class="mb-2 text-xs font-bold text-slate-500 flex justify-between">
+                    <span id="question-tracker">السؤال 1 من 20</span>
+                    <span id="question-points">5 درجات</span>
+                </div>
+
+                <!-- نص السؤال -->
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 mb-6">
+                    <h2 id="question-text" class="text-lg sm:text-xl font-black text-slate-800"></h2>
+                </div>
+
+                <!-- الخيارات -->
+                <div id="options-container" class="grid grid-cols-1 gap-3 mb-6"></div>
+
+                <!-- زر التالي -->
+                <div class="flex justify-end">
+                    <button id="next-btn" onclick="nextQuestion()" class="hidden btn-hover bg-blue-600 hover:bg-blue-700 text-white font-bold text-base px-8 py-3 rounded-xl shadow-md transition">
+                        السؤال التالي ⬅️
+                    </button>
+                </div>
+            </div>
+
+            <!-- شاشة النتيجة النهائية -->
+            <div id="result-screen" class="hidden text-center py-6 space-y-6">
+                <h2 id="final-greeting" class="text-xl sm:text-2xl font-black text-slate-800"></h2>
+                
+                <div class="bg-slate-50 border border-slate-200 rounded-3xl p-6 max-w-sm mx-auto shadow-sm">
+                    <div class="text-xs font-bold text-slate-500 mb-1">الدرجة النهائية</div>
+                    <div class="text-5xl font-black text-blue-700 mb-2" id="final-score">0 / 100</div>
+                    <div class="text-lg font-black text-slate-700 border-t border-slate-200 pt-3" id="final-evaluation"></div>
+                </div>
+
+                <div id="final-message" class="text-base font-bold px-4 py-3 rounded-xl max-w-md mx-auto"></div>
+
+                <button onclick="restartQuiz()" class="btn-hover bg-slate-800 hover:bg-slate-900 text-white font-bold text-base px-8 py-3 rounded-xl shadow-md transition">
+                    إعادة الاختبار 🔄
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // رابط Google Script الخاص بك
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydEvDl8t7ub34RFfOvbcL44auacq3LcN833cQIvqqf_Sxlu4-Cqmj7QTiFeJnhfAbD/exec";
+
+        // الأسئلة مع توزيع متوازن ومخلوط للإجابات الصحيحة
+        const questionsData = [
+            { question: "1. ما مصدر الفعل «أكرمَ»؟", options: ["أ) إكرام", "ب) كرامة", "ج) تكريم", "د) مكرمة"], correct: 0 },
+            { question: "2. ما وزن مصدر الفعل «أخرجَ»؟", options: ["أ) تفعيل", "ب) مفاعلة", "ج) افتعال", "د) إفعال"], correct: 3 },
+            { question: "3. الفعل الذي مصدره «إرسال» هو:", options: ["أ) رسَّلَ", "ب) راسلَ", "ج) أرسلَ", "د) ترسَّلَ"], correct: 2 },
+            { question: "4. ما مصدر الفعل «أبدعَ»؟", options: ["أ) إبداء", "ب) إبداع", "ج) تبديع", "د) بدعة"], correct: 1 },
+            { question: "5. «أقامَ → إقامة»؛ وزن المصدر هو:", options: ["أ) إفالة", "ب) إفعال", "ج) تفعيل", "د) مفاعلة"], correct: 0 },
+            { question: "6. لماذا جاء مصدر «أعانَ» على «إعانة»؟", options: ["أ) لأن الفعل مضعّف", "ب) لأن الفعل معتل الآخر", "ج) لأن الفعل معتل العين", "د) لأن الفعل على وزن فاعل"], correct: 2 },
+            { question: "7. ما مصدر الفعل «علَّمَ»؟", options: ["أ) إعلام", "ب) تعلُّم", "ج) معلومة", "د) تعليم"], correct: 3 },
+            { question: "8. ما وزن مصدر الفعل «كرَّمَ»؟", options: ["أ) إفعال", "ب) مفاعلة", "ج) تفعيل", "د) إفالة"], correct: 2 },
+            { question: "9. «درَّسَ → تدريس»؛ وزن الفعل هو:", options: ["أ) أفعل", "ب) فعَّل", "ج) فاعل", "د) تفعَّل"], correct: 1 },
+            { question: "10. ما مصدر الفعل «قدَّمَ»؟", options: ["أ) تقديم", "ب) مقدمة", "ج) إقدام", "د) تقدُّم"], correct: 0 },
+            { question: "11. ما مصدر الفعل «هنَّأَ»؟", options: ["أ) تهنّؤ", "ب) إهناء", "ج) تهنئة", "د) تهنية"], correct: 2 },
+            { question: "12. وزن مصدر الفعل «برَّأَ» هو:", options: ["أ) تفعيل", "ب) تفعئة", "ج) إفعال", "د) تفعلة"], correct: 3 },
+            { question: "13. ما مصدر الفعل «ربَّى»؟", options: ["أ) تربي", "ب) تربية", "ج) تربئة", "د) إرباء"], correct: 1 },
+            { question: "14. ما وزن مصدر الفعل «سمَّى»؟", options: ["أ) تفعلة", "ب) تفعيل", "ج) تفعية", "د) إفالة"], correct: 0 },
+            { question: "15. الفعل «قاتلَ» يأتي مصدره على وزني:", options: ["أ) إفعال وتفعيل", "ب) تفعيل وتفعلة", "ج) إفالة ومفاعلة", "د) فعال ومفاعلة"], correct: 3 },
+            { question: "16. ما مصدر الفعل «ناقشَ»؟", options: ["أ) نقاشة وتنقاش", "ب) مناقشة ونقاش", "ج) مناقش وتناقش", "د) إنقاش ونقاش"], correct: 1 },
+            { question: "17. ما وزن الفعل «جادلَ»؟", options: ["أ) فاعل", "ب) أفعل", "ج) فعَّل", "د) تفاعل"], correct: 0 },
+            { question: "18. أيُّ مجموعة تحتوي على مصدر صحيح للفعل؟", options: ["أ) أكرمَ → تكريم", "ب) قاتلَ → مقتل", "ج) علَّمَ → تعليم", "د) ناقشَ → تناقش"], correct: 2 },
+            { question: "19. أيُّ زوج غير صحيح؟", options: ["أ) أرسلَ → إرسال", "ب) كرَّمَ → تكريم", "ج) ربَّى → تربية", "د) جادلَ → تجادل"], correct: 3 },
+            { question: "20. أيُّ قاعدة صحيحة؟", options: ["أ) أَفْعَلَ → تَفْعِيل", "ب) فَاعَلَ → فِعَال أو مُفَاعَلَة", "ج) فَعَّلَ → إِفْعَال", "د) أَفْعَلَ → مُفَاعَلَة"], correct: 1 }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let studentName = "";
+        let studentClass = "";
+
+        // مولد الأصوات التفاعلية (Web Audio API)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            if (type === 'correct') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'triangle';
+                
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+                osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.3);
+                
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.6);
+            } else if (type === 'wrong') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'sawtooth';
+                
+                osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(110, audioCtx.currentTime + 0.15);
+                
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+            } else if (type === 'celebrate') {
+                const notes = [523.25, 659.25, 783.99, 1046.50, 880, 1046.50];
+                notes.forEach((freq, index) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (index * 0.12));
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime + (index * 0.12));
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + (index * 0.12) + 0.3);
+                    osc.start(audioCtx.currentTime + (index * 0.12));
+                    osc.stop(audioCtx.currentTime + (index * 0.12) + 0.3);
+                });
+            }
+        }
+
+        function startQuiz() {
+            const nameInput = document.getElementById('student-name').value.trim();
+            const classInput = document.getElementById('student-class').value.trim();
+            const errorEl = document.getElementById('error-msg');
+
+            const arabicPattern = /^[\u0600-\u06FF\s]+$/;
+            
+            if (!arabicPattern.test(nameInput)) {
+                errorEl.innerText = "❌ يرجى كتابة اسم الطالب باللغة العربية حصرًا!";
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            const words = nameInput.split(/\s+/).filter(w => w.length > 0);
+            if (words.length < 3) {
+                errorEl.innerText = "❌ يرجى كتابة اسم الطالب الثلاثي كاملاً!";
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            if (classInput === "") {
+                errorEl.innerText = "❌ يرجى كتابة الصف الدراسي!";
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            errorEl.classList.add('hidden');
+            studentName = nameInput;
+            studentClass = classInput;
+
+            document.getElementById('display-name').innerText = studentName;
+            document.getElementById('display-class').innerText = studentClass;
+
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const currentQ = questionsData[currentQuestionIndex];
+            document.getElementById('question-text').innerText = currentQ.question;
+            document.getElementById('question-tracker').innerText = `السؤال ${currentQuestionIndex + 1} من ${questionsData.length}`;
+            document.getElementById('next-btn').classList.add('hidden');
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            currentQ.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-hover bg-white text-slate-700 border-2 border-slate-200 font-bold text-base p-4 rounded-xl text-right w-full flex justify-between items-center transition';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(index, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, selectedBtn) {
+            const currentQ = questionsData[currentQuestionIndex];
+            const allButtons = document.querySelectorAll('#options-container button');
+
+            allButtons.forEach(btn => btn.disabled = true);
+
+            if (selectedIndex === currentQ.correct) {
+                playSound('correct');
+                score += 5;
+                document.getElementById('current-score').innerText = score;
+                selectedBtn.classList.add('correct-opt');
+            } else {
+                playSound('wrong');
+                selectedBtn.classList.add('wrong-opt');
+                allButtons[currentQ.correct].classList.add('correct-opt');
+            }
+
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questionsData.length) {
+                loadQuestion();
+            } else {
+                showFinalResult();
+            }
+        }
+
+        function triggerConfetti(durationSeconds) {
+            const end = Date.now() + (durationSeconds * 1000);
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            })();
+        }
+
+        function showFinalResult() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            document.getElementById('final-greeting').innerText = `نتيجة الطالب: ${studentName}`;
+            document.getElementById('final-score').innerText = `${score} / 100`;
+
+            const evalEl = document.getElementById('final-evaluation');
+            const msgEl = document.getElementById('final-message');
+            let evaluationText = "";
+
+            if (score >= 90) {
+                evaluationText = "ممتاز 🏆";
+                evalEl.innerText = evaluationText;
+                evalEl.className = "text-xl font-black text-emerald-600 border-t border-slate-200 pt-3";
+                msgEl.innerText = "أداء استثنائي ومبدع! أحسنت العمل.";
+                msgEl.className = "text-base font-bold px-4 py-3 rounded-xl max-w-md mx-auto bg-emerald-50 text-emerald-800 border border-emerald-200";
+                playSound('celebrate');
+                triggerConfetti(3);
+            } else if (score >= 80) {
+                evaluationText = "جيد جداً 🌟";
+                evalEl.innerText = evaluationText;
+                evalEl.className = "text-xl font-black text-blue-600 border-t border-slate-200 pt-3";
+                msgEl.innerText = "أداء رائع جداً! استمر في التميز.";
+                msgEl.className = "text-base font-bold px-4 py-3 rounded-xl max-w-md mx-auto bg-blue-50 text-blue-800 border border-blue-200";
+                playSound('celebrate');
+                triggerConfetti(2);
+            } else {
+                evaluationText = "تحتاج إلى مراجعة الموضوع ودراسته 📖";
+                evalEl.innerText = evaluationText;
+                evalEl.className = "text-xl font-black text-amber-600 border-t border-slate-200 pt-3";
+                msgEl.innerText = "لا تقلق، يمكنك إعادة الاختبار بعد مراجعة الدرس مجدداً.";
+                msgEl.className = "text-base font-bold px-4 py-3 rounded-xl max-w-md mx-auto bg-amber-50 text-amber-800 border border-amber-200";
+            }
+
+            // إرسال البيانات إلى شيت جوجل تلقائياً عند إنهاء الاختبار
+            sendDataToGoogleSheet(studentName, studentClass, score, evaluationText);
+        }
+
+        function sendDataToGoogleSheet(name, sClass, finalScore, evaluation) {
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    studentName: name,
+                    studentClass: sClass,
+                    score: finalScore,
+                    evaluation: evaluation
+                })
+            }).catch(error => console.error('Error sending data:', error));
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById('current-score').innerText = "0";
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+            document.getElementById('student-name').value = "";
+            document.getElementById('student-class').value = "";
+        }
+    </script>
+</body>
+</html>
