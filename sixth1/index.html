@@ -488,8 +488,8 @@
 </div>
 
 <script>
-    // الرابط الخاص بك مدمج هنا
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzjeiGYKpW46dYTep-aRXRhS5zTqT-cYgiT7dxNLmJDTiUi6ebCQh8p4EdYTMRxXQ8ehw/exec";
+    // الرابط الجديد مدمج هنا
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzKwk0DL0L6EnF4v0FGiZ0SWIXXpQGQ2oRF8c2_DQBcv3uDVf0wr900hGKfw8sNpSHNZw/exec";
 
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     const audioCtx = new AudioContext();
@@ -706,9 +706,9 @@
             },
             body: formData.toString()
         }).then(() => {
-            console.log("تم الإرسال بنجاح إلى شيت جوجل");
+            console.log("تم إرسال البيانات إلى شيت جوجل بنجاح");
         }).catch(error => {
-            console.error("خطأ بالإرسال:", error);
+            console.error("خطأ بالأرسال:", error);
         });
     }
 
