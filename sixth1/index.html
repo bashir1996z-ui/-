@@ -323,7 +323,6 @@
             margin: 5px 0;
         }
 
-        /* Leaderboard Table */
         .leaderboard-title {
             font-size: 18px;
             font-weight: 800;
@@ -395,14 +394,12 @@
 <body>
 
 <div class="main-wrapper">
-    <!-- Header -->
     <div class="header-bar">
         <h1>اختبار القواعد النحوية التفاعلي 📘</h1>
         <p>قيّم مهاراتك وانافس على المرتبة الأولى!</p>
     </div>
 
     <div class="content-body">
-        <!-- 1. Start View -->
         <div id="start-screen">
             <div class="form-group">
                 <label for="student-name">اسم الطالب الثلاثي:</label>
@@ -414,7 +411,6 @@
             </button>
         </div>
 
-        <!-- 2. Quiz View -->
         <div id="quiz-screen" class="hidden">
             <div class="quiz-status-bar">
                 <span>السؤال <span id="current-q-num">1</span> من <span id="total-q-num">10</span></span>
@@ -434,7 +430,6 @@
             </div>
         </div>
 
-        <!-- 3. Result & Leaderboard View -->
         <div id="result-screen" class="hidden">
             <div class="result-header">
                 <div class="trophy-icon" id="result-icon">🏆</div>
@@ -442,13 +437,11 @@
                 <p id="student-name-display" style="color: var(--text-muted); font-weight: 600; margin-top: 5px;"></p>
             </div>
 
-            <!-- Full Score Praise Banner -->
             <div id="praise-banner" class="praise-banner hidden">
                 <span>🌟</span>
                 <span>ما شاء الله! تبارك الرحمن! حصلت على الدرجة الكاملة بنجاح باهر 🌟</span>
             </div>
 
-            <!-- Stats Grid -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="label">الدرجة النهائية</div>
@@ -464,14 +457,12 @@
                 </div>
             </div>
 
-            <!-- Rank Highlight Card -->
             <div class="rank-card">
                 <div class="rank-title">ترتيبك بين جميع الطلاب:</div>
                 <div class="rank-number" id="rank-display">المركز #1</div>
                 <div style="font-size: 13px; color: #4F46E5; font-weight: 600;">(يُحسب الترتيب بناءً على أعلى درجة وأسرع وقت)</div>
             </div>
 
-            <!-- Leaderboard Table -->
             <div class="leaderboard-title">
                 <span>📊</span>
                 <span>قائمة المتصدرين (أفضل النتائج):</span>
@@ -485,9 +476,7 @@
                         <th style="width: 20%;">الوقت</th>
                     </tr>
                 </thead>
-                <tbody id="leaderboard-body">
-                    <!-- Dynamic rows inserted here -->
-                </tbody>
+                <tbody id="leaderboard-body"></tbody>
             </table>
 
             <button class="btn-action" onclick="restartQuiz()">
@@ -499,10 +488,9 @@
 </div>
 
 <script>
-    // رابط جوجل شيت المربوط بالاختبار
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz4onZkP7Q3MO1jrACMLilxHzHb6G0xUCfAvW4gNgqNwsu_U4Fxp44tIjNCxRxgyMUelQ/exec";
+    // الرابط الخاص بك مدمج هنا
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzjeiGYKpW46dYTep-aRXRhS5zTqT-cYgiT7dxNLmJDTiUi6ebCQh8p4EdYTMRxXQ8ehw/exec";
 
-    // Audio Context Synthesizer for SFX
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     const audioCtx = new AudioContext();
 
@@ -515,9 +503,9 @@
 
         if (type === 'correct') {
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-            osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
-            osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+            osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+            osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
             gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
             osc.start();
@@ -533,7 +521,6 @@
         }
     }
 
-    // Questions Data
     const questions = [
         {
             question: "س1: الطالبتانِ حاضرتانِ.\nكلمة (الطالبتان) تُعرب:",
@@ -602,7 +589,6 @@
         }
     ];
 
-    // Quiz App State
     let currentQuestionIndex = 0;
     let score = 0;
     let studentName = "";
@@ -610,12 +596,9 @@
     let timerInterval = null;
     let timeSeconds = 0;
 
-    // Default mock leaderboard data if none in localStorage
     const defaultLeaderboard = [
         { name: "سارة أحمد علي", score: 10, timeSeconds: 42, timestamp: Date.now() - 3600000 },
-        { name: "عمر خالد منصور", score: 10, timeSeconds: 58, timestamp: Date.now() - 7200000 },
-        { name: "فاطمة محمد العتيبي", score: 9, timeSeconds: 50, timestamp: Date.now() - 10800000 },
-        { name: "يوسف حسن الكعبي", score: 8, timeSeconds: 65, timestamp: Date.now() - 14400000 }
+        { name: "عمر خالد منصور", score: 10, timeSeconds: 58, timestamp: Date.now() - 7200000 }
     ];
 
     function startQuiz() {
@@ -686,7 +669,6 @@
             playSound('correct');
             score++;
             
-            // 2 seconds confetti burst for correct answer
             confetti({
                 particleCount: 45,
                 spread: 60,
@@ -709,26 +691,24 @@
         }, 1800);
     }
 
-    // دالة إرسال النتيجة إلى Google Sheet
     function sendResultsToGoogleSheet(name, score, formattedTime, percentage) {
-        const payload = {
-            studentName: name,
-            score: score + "/" + questions.length,
-            timeSpent: formattedTime,
-            percentage: percentage + "%"
-        };
+        const formData = new URLSearchParams();
+        formData.append("studentName", name);
+        formData.append("score", score + "/" + questions.length);
+        formData.append("timeSpent", formattedTime);
+        formData.append("percentage", percentage + "%");
 
         fetch(GOOGLE_SHEET_URL, {
             method: 'POST',
             mode: 'no-cors',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: JSON.stringify(payload)
+            body: formData.toString()
         }).then(() => {
-            console.log("تم إرسال النتيجة بنجاح إلى جوجل شيت");
+            console.log("تم الإرسال بنجاح إلى شيت جوجل");
         }).catch(error => {
-            console.error("خطأ أثناء الإرسال:", error);
+            console.error("خطأ بالإرسال:", error);
         });
     }
 
@@ -747,15 +727,12 @@
         const percentage = Math.round((score / questions.length) * 100);
         document.getElementById('stat-percentage').innerText = `${percentage}%`;
 
-        // إرسال البيانات فوراً إلى جوجل شيت
         sendResultsToGoogleSheet(studentName, score, formattedTime, percentage);
 
-        // Full Score Praise Banner Check
         const praiseBanner = document.getElementById('praise-banner');
         if (score === questions.length) {
             praiseBanner.classList.remove('hidden');
             
-            // 5 Seconds Celebration Confetti
             const duration = 5 * 1000;
             const animationEnd = Date.now() + duration;
 
@@ -776,7 +753,6 @@
             praiseBanner.classList.add('hidden');
         }
 
-        // Leaderboard & Rank Processing
         processLeaderboard(studentName, score, timeSeconds, formattedTime);
     }
 
@@ -786,7 +762,6 @@
             leaderboard = [...defaultLeaderboard];
         }
 
-        // Add current result
         const currentEntry = {
             name: name,
             score: currentScore,
@@ -797,7 +772,6 @@
 
         leaderboard.push(currentEntry);
 
-        // Sort rules: 1st by Score (descending), 2nd by Time Seconds (ascending)
         leaderboard.sort((a, b) => {
             if (b.score !== a.score) {
                 return b.score - a.score;
@@ -805,14 +779,11 @@
             return a.timeSeconds - b.timeSeconds;
         });
 
-        // Save updated list
         localStorage.setItem('quiz_leaderboard_v1', JSON.stringify(leaderboard));
 
-        // Find current student's rank
         const studentRank = leaderboard.findIndex(item => item.isCurrent) + 1;
         document.getElementById('rank-display').innerText = `المركز #${studentRank}`;
 
-        // Render Leaderboard Table
         const tbody = document.getElementById('leaderboard-body');
         tbody.innerHTML = '';
 
