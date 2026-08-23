@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار مصادر الفعل الخماسي - الثالث المتوسط</title>
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            --secondary-gradient: linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%);
+            --bg-gradient: linear-gradient(135deg, #F0F4F8 0%, #E2E8F0 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --success: #10B981;
+            --success-light: #D1FAE5;
+            --error: #EF4444;
+            --error-light: #FEE2E2;
+            --radius-xl: 24px;
+            --radius-lg: 16px;
+            --shadow-glow: 0 20px 40px rgba(79, 70, 229, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 750px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-glow);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header-bar {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 30px 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header-bar h1 {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .header-bar p {
+            font-size: 15px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .content-body {
+            padding: 35px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+
+        .custom-input {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 17px;
+            border: 2px solid #E2E8F0;
+            border-radius: var(--radius-lg);
+            outline: none;
+            transition: all 0.3s ease;
+            background: #F8FAFC;
+        }
+
+        .custom-input:focus {
+            border-color: #6366F1;
+            background: #FFFFFF;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(79, 70, 229, 0.35);
+        }
+
+        .quiz-status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            background: #F1F5F9;
+            padding: 12px 20px;
+            border-radius: var(--radius-lg);
+            font-weight: 700;
+        }
+
+        .timer-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4F46E5;
+            background: #EEF2FF;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 15px;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #E2E8F0;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--secondary-gradient);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .question-card {
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            border: 1px solid #E2E8F0;
+            margin-bottom: 25px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            font-weight: 800;
+            line-height: 1.6;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            white-space: pre-line;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        .option-btn {
+            background: #F8FAFC;
+            border: 2px solid #E2E8F0;
+            padding: 16px 20px;
+            border-radius: var(--radius-lg);
+            font-size: 17px;
+            font-weight: 600;
+            text-align: right;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-main);
+        }
+
+        .option-btn:hover {
+            border-color: #6366F1;
+            background: #EEF2FF;
+        }
+
+        .option-btn.correct {
+            background: var(--success-light) !important;
+            border-color: var(--success) !important;
+            color: #065F46 !important;
+            font-weight: 700;
+        }
+
+        .option-btn.incorrect {
+            background: var(--error-light) !important;
+            border-color: var(--error) !important;
+            color: #991B1B !important;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .trophy-icon {
+            font-size: 65px;
+            margin-bottom: 10px;
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .praise-banner {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            border: 2px solid #F59E0B;
+            border-radius: var(--radius-lg);
+            padding: 18px 20px;
+            color: #92400E;
+            font-size: 19px;
+            font-weight: 800;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: var(--radius-lg);
+            padding: 18px 10px;
+            text-align: center;
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .value {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--text-main);
+        }
+
+        .rank-card {
+            background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+            border: 2px solid #6366F1;
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .rank-card .rank-title {
+            font-size: 15px;
+            color: #4338CA;
+            font-weight: 700;
+        }
+
+        .rank-card .rank-number {
+            font-size: 38px;
+            font-weight: 900;
+            color: #312E81;
+            margin: 5px 0;
+        }
+
+        .leaderboard-title {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid #E2E8F0;
+        }
+
+        .leaderboard-table th {
+            background: #F1F5F9;
+            color: var(--text-muted);
+            padding: 12px 15px;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .leaderboard-table td {
+            padding: 14px 15px;
+            border-top: 1px solid #E2E8F0;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .leaderboard-table tr.current-user {
+            background: #EEF2FF;
+            font-weight: 800;
+            color: #4338CA;
+        }
+
+        .badge-rank {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
+            border-radius: 50%;
+            text-align: center;
+            font-weight: 800;
+            font-size: 13px;
+            background: #E2E8F0;
+            color: var(--text-main);
+        }
+
+        .rank-1 { background: #FCD34D; color: #78350F; }
+        .rank-2 { background: #E2E8F0; color: #334155; }
+        .rank-3 { background: #FDBA74; color: #7C2D12; }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 600px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .content-body { padding: 25px 20px; }
+            .header-bar h1 { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-wrapper">
+    <div class="header-bar">
+        <h1>اختبار مصادر الفعل الخماسي 📘</h1>
+        <p>الصف الثالث المتوسط - أسئلة عشوائية لكل طالب (30 سؤال)</p>
+    </div>
+
+    <div class="content-body">
+        <div id="start-screen">
+            <div class="form-group">
+                <label for="student-name">اسم الطالب الثلاثي:</label>
+                <input type="text" id="student-name" class="custom-input" placeholder="مثال: علي حسن محسن" autocomplete="off" required>
+            </div>
+            <button class="btn-action" onclick="startQuiz()">
+                <span>ابدأ الاختبار الآن</span>
+                <span>🚀</span>
+            </button>
+        </div>
+
+        <div id="quiz-screen" class="hidden">
+            <div class="quiz-status-bar">
+                <span>السؤال <span id="current-q-num">1</span> من <span id="total-q-num">30</span></span>
+                <div class="timer-badge">
+                    <span>⏱️</span>
+                    <span id="timer-display">00:00</span>
+                </div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+
+            <div class="question-card">
+                <div class="question-text" id="question-text">نص السؤال يظهر هنا</div>
+                <div class="options-grid" id="options-container"></div>
+            </div>
+        </div>
+
+        <div id="result-screen" class="hidden">
+            <div class="result-header">
+                <div class="trophy-icon" id="result-icon">🏆</div>
+                <h2 id="result-title" style="font-size: 24px; font-weight: 900;">نتيجة الاختبار</h2>
+                <p id="student-name-display" style="color: var(--text-muted); font-weight: 600; margin-top: 5px;"></p>
+            </div>
+
+            <div id="praise-banner" class="praise-banner hidden">
+                <span>🌟</span>
+                <span>ما شاء الله! تبارك الرحمن! حصلت على الدرجة الكاملة بنجاح باهر 🌟</span>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="label">الدرجة النهائية</div>
+                    <div class="value" id="stat-score" style="color: #4F46E5;">0/30</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">الوقت المستغرق</div>
+                    <div class="value" id="stat-time" style="color: #06B6D4;">00:00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">النسبة المئوية</div>
+                    <div class="value" id="stat-percentage" style="color: #10B981;">0%</div>
+                </div>
+            </div>
+
+            <div class="rank-card">
+                <div class="rank-title">ترتيبك بين جميع الطلاب:</div>
+                <div class="rank-number" id="rank-display">المركز #1</div>
+                <div style="font-size: 13px; color: #4F46E5; font-weight: 600;">(يُحسب الترتيب بناءً على أعلى درجة وأسرع وقت)</div>
+            </div>
+
+            <div class="leaderboard-title">
+                <span>📊</span>
+                <span>قائمة المتصدرين:</span>
+            </div>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th style="width: 15%;">المركز</th>
+                        <th style="width: 45%;">اسم الطالب</th>
+                        <th style="width: 20%;">الدرجة</th>
+                        <th style="width: 20%;">الوقت</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body"></tbody>
+            </table>
+
+            <button class="btn-action" onclick="restartQuiz()">
+                <span>إعادة الاختبار</span>
+                <span>🔄</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwbbZia6Xj44njWycDC7j5WHhZ7upzlqI2sXEDVkeso7Gzn5E4WZatJHHQ1IBiqUZE/exec";
+
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContext();
+
+    function playSound(type) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'correct') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+            osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.45);
+        } else if (type === 'incorrect') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(160, audioCtx.currentTime + 0.15);
+            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.35);
+        }
+    }
+
+    // بنك الأسئلة الخام (بدون أرقام أو ترميز أبجدي ليتم الخلط بعشوائية)
+    const rawQuestions = [
+        { question: "ما مصدر الفعل «انكسرَ»؟", options: ["انكسار", "تكسير", "كسر", "منكسر"], answer: "انكسار" },
+        { question: "ما مصدر الفعل «انطلقَ»؟", options: ["إطلاق", "انطلاق", "طلوع", "انطلاقة"], answer: "انطلاق" },
+        { question: "ما مصدر الفعل «انفتحَ»؟", options: ["افتتاح", "فتح", "انفتاح", "مفتوح"], answer: "انفتاح" },
+        { question: "ما مصدر الفعل «اجتمعَ»؟", options: ["اجتماع", "جمع", "تجمُّع", "جماعة"], answer: "اجتماع" },
+        { question: "ما مصدر الفعل «اجتهدَ»؟", options: ["جهاد", "اجتهاد", "مجتهد", "إجهاد"], answer: "اجتهاد" },
+        { question: "ما مصدر الفعل «اقتربَ»؟", options: ["تقرُّب", "قرب", "اقتراب", "تقريب"], answer: "اقتراب" },
+        { question: "ما مصدر الفعل «اخترعَ»؟", options: ["اختراع", "اختراعًاة", "ابتكار", "خَرْع"], answer: "اختراع" },
+        { question: "ما مصدر الفعل «احترمَ»؟", options: ["احترام", "حُرمة", "محترم", "إكرام"], answer: "احترام" },
+        { question: "ما مصدر الفعل «انتصرَ»؟", options: ["نصر", "انتصار", "منصور", "تنصير"], answer: "انتصار" },
+        { question: "ما مصدر الفعل «اعتذرَ»؟", options: ["عذر", "اعتذار", "معذرة", "تعذير"], answer: "اعتذار" },
+        { question: "ما مصدر الفعل «احمرَّ»؟", options: ["حُمرة", "تحمير", "احمرار", "حمراء"], answer: "احمرار" },
+        { question: "ما مصدر الفعل «اخضرَّ»؟", options: ["اخضرار", "خضرة", "تخضير", "أخضر"], answer: "اخضرار" },
+        { question: "ما مصدر الفعل «اصفرَّ»؟", options: ["تصفير", "صفرة", "اصفرار", "أصفر"], answer: "اصفرار" },
+        { question: "ما مصدر الفعل «اسودَّ»؟", options: ["تسويد", "سواد", "اسوداد", "أسود"], answer: "اسوداد" },
+        { question: "ما مصدر الفعل «تعلَّمَ»؟", options: ["تعليم", "تعلُّم", "علم", "معلومة"], answer: "تعلُّم" },
+        { question: "ما مصدر الفعل «تقدَّمَ»؟", options: ["تقديم", "تقدُّم", "مقدمة", "قدم"], answer: "تقدُّم" },
+        { question: "ما مصدر الفعل «تجمَّلَ»؟", options: ["جمال", "تجميل", "تجمُّل", "جميل"], answer: "تجمُّل" },
+        { question: "ما مصدر الفعل «تحسَّنَ»؟", options: ["تحسين", "حُسن", "تحسُّن", "حسن"], answer: "تحسُّن" },
+        { question: "ما مصدر الفعل «تكلَّمَ»؟", options: ["كلام", "تكليم", "تكلُّم", "متكلم"], answer: "تكلُّم" },
+        { question: "ما مصدر الفعل «تدرَّبَ»؟", options: ["تدريب", "دُربة", "تدرُّب", "مدرّب"], answer: "تدرُّb" },
+        { question: "ما مصدر الفعل «تعاونَ»؟", options: ["إعانة", "تعاون", "تعاوُن", "تعاونِيّة"], answer: "تعاوُن" },
+        { question: "ما مصدر الفعل «تشاورَ»؟", options: ["شورى", "تشاوُر", "استشارة", "مشورة"], answer: "تشاوُر" },
+        { question: "ما مصدر الفعل «تشاركَ»؟", options: ["مشاركة", "شراكة", "تشارُك", "اشتراك"], answer: "تشارُك" },
+        { question: "ما مصدر الفعل «تنافسَ»؟", options: ["منافسة", "تنافُس", "نفاسة", "منافس"], answer: "تنافُس" },
+        { question: "ما مصدر الفعل «تفاهمَ»؟", options: ["فهم", "تفاهم", "تفاهُم", "إفهام"], answer: "تفاهُم" },
+        { question: "ما مصدر الفعل «تدحرجَ»؟", options: ["دحرجة", "تدحرُج", "انحدار", "متدحرج"], answer: "تدحرُج" },
+        { question: "ما مصدر الفعل «تزلزلَ»؟", options: ["زلزال", "تزلزُل", "زلزلة", "تزلزل"], answer: "تزلزُل" },
+        { question: "ما مصدر الفعل «تبعثرَ»؟", options: ["بعثرة", "تبعثُر", "بعثار", "مبعثر"], answer: "تبعثُر" },
+        { question: "أيُّ مجموعة تحتوي على مصادر أفعال خماسية صحيحة؟", options: ["انكسار – اجتماع – تعلُّم", "كتابة – قراءة – جلوس", "إكرام – تعليم – إحسان", "استعمال – استخراج – استغفار"], answer: "انكسار – اجتماع – تعلُّم" },
+        { question: "أيُّ مجموعة مرتبة بشكل صحيح؟", options: ["انفعل ← انفعال / افتعل ← افتعال / تفعّل ← تفعُّل", "انفعل ← افتعال / افتعل ← انفعال / تفعّل ← تفاعُل", "انفعل ← انفعال / افتعل ← تفعُّل / تفاعل ← افعلال", "انفعل ← تفاعُل / افتعل ← افعلال / تفعّل ← انفعال"], answer: "انفعل ← انفعال / افتعل ← افتعال / تفعّل ← تفعُّل" }
+    ];
+
+    // دالة خلط مصفوفة عشوائياً (Fisher-Yates Shuffle)
+    function shuffleArray(array) {
+        let arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    let questions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let studentName = "";
+    let isAnswering = false;
+    let timerInterval = null;
+    let timeSeconds = 0;
+
+    const defaultLeaderboard = [
+        { name: "محمد جاسم", score: 30, timeSeconds: 120, timestamp: Date.now() - 3600000 },
+        { name: "فاطمة حيدر", score: 29, timeSeconds: 145, timestamp: Date.now() - 7200000 }
+    ];
+
+    function prepareQuestions() {
+        // خلط ترتيب الأسئلة
+        let shuffledQ = shuffleArray(rawQuestions);
+
+        // خلط ترتيب الاختيارات لكل سؤال وتحديد الإجابة الصحيحة
+        questions = shuffledQ.map(q => {
+            let shuffledOptions = shuffleArray(q.options);
+            let correctIndex = shuffledOptions.indexOf(q.answer);
+            return {
+                question: q.question,
+                options: shuffledOptions,
+                answer: correctIndex
+            };
+        });
+    }
+
+    function startQuiz() {
+        const nameInput = document.getElementById('student-name').value.trim();
+        if (nameInput === "") {
+            alert("⚠️ يرجى كتابة اسم الطالب الثلاثي للبدء!");
+            return;
+        }
+        studentName = nameInput;
+
+        prepareQuestions(); // تجهيز الأسئلة وخلطها عشوائياً
+
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+
+        currentQuestionIndex = 0;
+        score = 0;
+        timeSeconds = 0;
+        
+        document.getElementById('total-q-num').innerText = questions.length;
+        startTimer();
+        showQuestion();
+    }
+
+    function startTimer() {
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            timeSeconds++;
+            const mins = Math.floor(timeSeconds / 60).toString().padStart(2, '0');
+            const secs = (timeSeconds % 60).toString().padStart(2, '0');
+            document.getElementById('timer-display').innerText = `${mins}:${secs}`;
+        }, 1000);
+    }
+
+    function stopTimer() {
+        clearInterval(timerInterval);
+    }
+
+    function showQuestion() {
+        isAnswering = false;
+        const q = questions[currentQuestionIndex];
+        
+        document.getElementById('current-q-num').innerText = currentQuestionIndex + 1;
+        document.getElementById('question-text').innerText = `س${currentQuestionIndex + 1}: ${q.question}`;
+        
+        const progressPercent = ((currentQuestionIndex) / questions.length) * 100;
+        document.getElementById('progress-fill').style.width = progressPercent + "%";
+
+        const optionsContainer = document.getElementById('options-container');
+        optionsContainer.innerHTML = '';
+
+        const prefixes = ["أ", "ب", "ج", "د"];
+
+        q.options.forEach((opt, index) => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<span>${prefixes[index]}) ${opt}</span><span class="opt-indicator"></span>`;
+            btn.onclick = () => selectOption(index, btn);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function selectOption(selectedIndex, element) {
+        if (isAnswering) return;
+        isAnswering = true;
+
+        const q = questions[currentQuestionIndex];
+        const options = document.querySelectorAll('.option-btn');
+
+        if (selectedIndex === q.answer) {
+            element.classList.add('correct');
+            playSound('correct');
+            score++;
+            
+            confetti({
+                particleCount: 30,
+                spread: 50,
+                origin: { y: 0.7 }
+            });
+        } else {
+            element.classList.add('incorrect');
+            options[q.answer].classList.add('correct');
+            playSound('incorrect');
+        }
+
+        setTimeout(() => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                stopTimer();
+                showResult();
+            }
+        }, 1200);
+    }
+
+    function sendResultsToGoogleSheet(name, score, formattedTime, percentage) {
+        const formData = new URLSearchParams();
+        formData.append("studentName", name);
+        formData.append("score", score + "/" + questions.length);
+        formData.append("timeSpent", formattedTime);
+        formData.append("percentage", percentage + "%");
+
+        fetch(GOOGLE_SHEET_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: formData.toString()
+        }).then(() => {
+            console.log("تم الإرسال بنجاح");
+        }).catch(error => {
+            console.error("خطأ بالأرسال:", error);
+        });
+    }
+
+    function showResult() {
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+
+        document.getElementById('student-name-display').innerText = `الطالب: ${studentName}`;
+        document.getElementById('stat-score').innerText = `${score}/${questions.length}`;
+        
+        const mins = Math.floor(timeSeconds / 60).toString().padStart(2, '0');
+        const secs = (timeSeconds % 60).toString().padStart(2, '0');
+        const formattedTime = `${mins}:${secs}`;
+        document.getElementById('stat-time').innerText = formattedTime;
+
+        const percentage = Math.round((score / questions.length) * 100);
+        document.getElementById('stat-percentage').innerText = `${percentage}%`;
+
+        sendResultsToGoogleSheet(studentName, score, formattedTime, percentage);
+
+        const praiseBanner = document.getElementById('praise-banner');
+        if (score === questions.length) {
+            praiseBanner.classList.remove('hidden');
+            
+            const duration = 4 * 1000;
+            const animationEnd = Date.now() + duration;
+
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+                confetti({
+                    particleCount: 35,
+                    startVelocity: 30,
+                    spread: 360,
+                    ticks: 60,
+                    origin: { x: Math.random(), y: Math.random() - 0.2 }
+                });
+            }, 250);
+        } else {
+            praiseBanner.classList.add('hidden');
+        }
+
+        processLeaderboard(studentName, score, timeSeconds, formattedTime);
+    }
+
+    function processLeaderboard(name, currentScore, currentTimeSec, formattedTime) {
+        let leaderboard = JSON.parse(localStorage.getItem('quiz_leaderboard_v3'));
+        if (!leaderboard || leaderboard.length === 0) {
+            leaderboard = [...defaultLeaderboard];
+        }
+
+        const currentEntry = {
+            name: name,
+            score: currentScore,
+            timeSeconds: currentTimeSec,
+            timestamp: Date.now(),
+            isCurrent: true
+        };
+
+        leaderboard.push(currentEntry);
+
+        leaderboard.sort((a, b) => {
+            if (b.score !== a.score) {
+                return b.score - a.score;
+            }
+            return a.timeSeconds - b.timeSeconds;
+        });
+
+        localStorage.setItem('quiz_leaderboard_v3', JSON.stringify(leaderboard));
+
+        const studentRank = leaderboard.findIndex(item => item.isCurrent) + 1;
+        document.getElementById('rank-display').innerText = `المركز #${studentRank}`;
+
+        const tbody = document.getElementById('leaderboard-body');
+        tbody.innerHTML = '';
+
+        leaderboard.forEach((item, idx) => {
+            const rank = idx + 1;
+            const tr = document.createElement('tr');
+            if (item.isCurrent) tr.className = 'current-user';
+
+            let rankBadge = `<span class="badge-rank">${rank}</span>`;
+            if (rank === 1) rankBadge = `<span class="badge-rank rank-1">1 🥇</span>`;
+            else if (rank === 2) rankBadge = `<span class="badge-rank rank-2">2 🥈</span>`;
+            else if (rank === 3) rankBadge = `<span class="badge-rank rank-3">3 🥉</span>`;
+
+            const itemMins = Math.floor(item.timeSeconds / 60).toString().padStart(2, '0');
+            const itemSecs = (item.timeSeconds % 60).toString().padStart(2, '0');
+            const itemFormattedTime = `${itemMins}:${itemSecs}`;
+
+            tr.innerHTML = `
+                <td>${rankBadge}</td>
+                <td>${item.name} ${item.isCurrent ? ' (أنت)' : ''}</td>
+                <td style="color: #4F46E5;">${item.score}/${questions.length}</td>
+                <td>${itemFormattedTime}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function restartQuiz() {
+        document.getElementById('result-screen').classList.add('hidden');
+        document.getElementById('start-screen').classList.remove('hidden');
+        document.getElementById('student-name').value = '';
+    }
+</script>
+
+</body>
+</html>
