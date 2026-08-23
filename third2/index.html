@@ -477,7 +477,6 @@
 </div>
 
 <script>
-    // رابط Google Web App المدمج
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwbbZia6Xj44njWycDC7j5WHhZ7upzlqI2sXEDVkeso7Gzn5E4WZatJHHQ1IBiqUZE/exec";
 
     const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -657,7 +656,9 @@
             });
         } else {
             element.classList.add('incorrect');
-            options[q.answer].classList.add('correct');
+            if (options[q.answer]) {
+                options[q.answer].classList.add('correct');
+            }
             playSound('incorrect');
         }
 
@@ -738,7 +739,7 @@
     }
 
     function processLeaderboard(name, currentScore, currentTimeSec, formattedTime) {
-        let leaderboard = JSON.parse(localStorage.getItem('quiz_leaderboard_v4'));
+        let leaderboard = JSON.parse(localStorage.getItem('quiz_leaderboard_v5'));
         if (!leaderboard || leaderboard.length === 0) {
             leaderboard = [...defaultLeaderboard];
         }
@@ -760,7 +761,7 @@
             return a.timeSeconds - b.timeSeconds;
         });
 
-        localStorage.setItem('quiz_leaderboard_v4', JSON.stringify(leaderboard));
+        localStorage.setItem('quiz_leaderboard_v5', JSON.stringify(leaderboard));
 
         const studentRank = leaderboard.findIndex(item => item.isCurrent) + 1;
         document.getElementById('rank-display').innerText = `المركز #${studentRank}`;
