@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>امتحانات القواعد التفاعلية - الأستاذ بشير حميد</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(30, 58, 138, 0.12);
+            width: 100%;
+            max-width: 650px;
+            padding: 30px;
+            border: 4px solid #3b82f6;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header { text-align: center; margin-bottom: 20px; }
+        .badge-title { background-color: #2563eb; color: white; display: inline-block; padding: 5px 18px; border-radius: 50px; font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+        h1 { color: #0f172a; font-size: 24px; font-weight: 900; }
+        .sub-title { color: #0284c7; font-size: 15px; font-weight: 700; }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        .input-group { margin: 20px 0; text-align: center; }
+        .input-group label { display: block; font-size: 17px; font-weight: 700; color: #1e293b; margin-bottom: 10px; }
+        .input-group input { width: 100%; padding: 14px; border: 2px dashed #60a5fa; border-radius: 12px; font-size: 18px; text-align: center; outline: none; }
+
+        .btn-start { background-color: #2563eb; color: white; border: none; width: 100%; padding: 16px; border-radius: 16px; font-size: 20px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 0 #1d4ed8; }
+
+        .quiz-header { display: flex; justify-content: space-between; align-items: center; background: #f0f9ff; padding: 12px 20px; border-radius: 12px; margin-bottom: 20px; font-weight: 700; border: 1px solid #bae6fd; }
+        .timer { color: #dc2626; font-size: 18px; }
+
+        .question-title { font-size: 19px; font-weight: 800; color: #1e293b; margin-bottom: 20px; line-height: 1.5; }
+        .options-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px; }
+
+        .option-btn {
+            background: #f8fafc;
+            border: 2px solid #cbd5e1;
+            padding: 14px 20px;
+            border-radius: 12px;
+            text-align: right;
+            font-size: 16px;
+            font-weight: 700;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-btn.correct-choice {
+            background-color: #dcfce7 !important;
+            border-color: #22c55e !important;
+            color: #15803d !important;
+        }
+
+        .option-btn.wrong-choice {
+            background-color: #fef2f2 !important;
+            border-color: #f87171 !important;
+            color: #b91c1c !important;
+        }
+
+        .score-badge { font-size: 48px; font-weight: 900; color: #2563eb; margin: 10px 0; }
+        .result-msg { font-size: 22px; font-weight: 800; margin-bottom: 20px; }
+
+        .telegram-box { background: #f0f9ff; border: 2px dashed #38bdf8; padding: 15px; border-radius: 16px; margin-top: 20px; text-align: center; }
+        .telegram-btn { display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; }
+
+        .action-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        
+        .btn-action {
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-review { background-color: #0284c7; color: white; box-shadow: 0 4px 0 #0369a1; }
+        .btn-cert { background-color: #1d4ed8; color: white; box-shadow: 0 4px 0 #1e40af; }
+
+        .review-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #cbd5e1;
+            text-align: right;
+        }
+
+        .review-q-title { font-weight: 800; font-size: 16px; color: #0f172a; margin-bottom: 8px; }
+        .review-opt { padding: 6px 10px; border-radius: 6px; font-size: 14px; margin-bottom: 4px; font-weight: 600; }
+        .review-opt.user-wrong { background-color: #fee2e2; color: #991b1b; }
+        .review-opt.correct-ans { background-color: #dcfce7; color: #166534; }
+
+        #certificate {
+            display: none;
+            width: 780px;
+            padding: 40px;
+            background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+            border: 10px solid #1d4ed8;
+            outline: 4px dashed #3b82f6;
+            outline-offset: -14px;
+            border-radius: 28px;
+            text-align: center;
+            position: relative;
+            margin: 20px auto;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .cert-title-container { margin-bottom: 20px; }
+        .cert-main-title { font-size: 34px; font-weight: 900; color: #1e40af; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        
+        .glass-pill {
+            background: rgba(255, 255, 255, 0.85);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            padding: 8px 22px;
+            display: inline-block;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+
+        .glass-pill.student {
+            background: rgba(219, 234, 254, 0.85);
+            border-color: #3b82f6;
+            font-size: 24px;
+            color: #1e3a8a;
+            margin: 12px 0;
+            padding: 10px 30px;
+        }
+
+        .glass-pill.badge-info {
+            background: rgba(224, 242, 254, 0.9);
+            border-color: #0284c7;
+            color: #0369a1;
+            font-size: 15px;
+        }
+
+        .cert-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .cert-card-box {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid #93c5fd;
+            border-radius: 16px;
+            padding: 12px;
+            font-size: 15px;
+            color: #1e293b;
+        }
+
+        .cert-card-box b { color: #1d4ed8; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <div class="badge-title">الصف الأول المتوسط</div>
+        <h1>امتحانات القواعد التفاعلية</h1>
+        <div class="sub-title">إعداد: الأستاذ بشير حميد</div>
+    </div>
+
+    <!-- 1. شاشة البداية -->
+    <div id="screen-start" class="screen active">
+        <div class="input-group">
+            <label for="student-name">✏️ اكتب اسمك الثلاثي يا بطل لتبدأ الاختبار:</label>
+            <input type="text" id="student-name" placeholder="مثال: أحمد محمد علي">
+        </div>
+        <button class="btn-start" onclick="startQuiz()">ابدأ الاختبار الآن 🚀</button>
+    </div>
+
+    <!-- 2. شاشة الأسئلة -->
+    <div id="screen-quiz" class="screen">
+        <div class="quiz-header">
+            <span>السؤال <span id="q-num">1</span> من 10</span>
+            <div class="timer">⏰ <span id="timer-display">10:00</span></div>
+        </div>
+
+        <div class="question-title" id="q-text">جاري التحميل...</div>
+        <div class="options-grid" id="options-container"></div>
+    </div>
+
+    <!-- 3. شاشة النتيجة -->
+    <div id="screen-result" class="screen">
+        <div style="text-align: center;">
+            <h2>نتيجة الاختبار</h2>
+            <div class="score-badge"><span id="final-score">0</span> / 10</div>
+            <div id="result-message" class="result-msg"></div>
+
+            <div class="action-btns">
+                <button class="btn-action btn-review" onclick="openReview()">🔍 إظهار الحل الصحيح</button>
+                <div id="cert-btn-container" style="display: none;">
+                    <button class="btn-action btn-cert" onclick="downloadCert()">🎓 تنزيل الشهادة التقديرية (PDF)</button>
+                </div>
+            </div>
+
+            <div class="telegram-box">
+                <p>اشترك في قناة الأستاذ لمزيد من الامتحانات من خلال الضغط على:</p>
+                <a href="https://t.me/sm_3rd" target="_blank" class="telegram-btn">📢 قناة التلغرام @sm_3rd</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. واجهة إظهار الإجابات الصحيحة -->
+    <div id="screen-review" class="screen">
+        <h2 style="text-align: center; margin-bottom: 15px; color: #0284c7;">مراجعة الإجابات والحلول الصحيحة</h2>
+        <div id="review-list"></div>
+        
+        <button class="btn-start" onclick="backToResult()" style="margin-top: 15px; margin-bottom: 10px;">العودة للنتيجة ↩</button>
+
+        <div class="telegram-box">
+            <p>اشترك في قناة الأستاذ لمزيد من الامتحانات من خلال الضغط على:</p>
+            <a href="https://t.me/sm_3rd" target="_blank" class="telegram-btn">📢 قناة التلغرام @sm_3rd</a>
+        </div>
+    </div>
+</div>
+
+<!-- قالب الشهادة التقديرية -->
+<div id="certificate">
+    <div class="cert-title-container">
+        <div class="glass-pill badge-info">🏆 شهادة تفوق واجتياز تفاعلي 🏆</div>
+        <div class="cert-main-title" style="margin-top: 8px;">وسام العبقري الصغير</div>
+    </div>
+
+    <div style="font-size: 18px; color: #475569; margin-bottom: 8px;">تمنح هذه الشهادة بكل فخر وإعتزاز إلى الطالب البطل:</div>
+    
+    <div>
+        <div class="glass-pill student" id="cert-student-name">أحمد محمد علي</div>
+    </div>
+
+    <div style="font-size: 19px; color: #1e293b; line-height: 1.8; margin-top: 10px;">
+        لحصوله على الدرجة الكاملة <b style="color: #2563eb; font-size: 22px;">(10 / 10)</b> بتقدير <b style="color: #2563eb;">(ممتاز)</b><br>
+        في اختبار مادة القواعد التفاعلية.
+    </div>
+
+    <div class="cert-grid">
+        <div class="cert-card-box">
+            👤 <b>المدرس المشرف:</b><br>
+            <span class="glass-pill" style="margin-top: 5px; font-size: 14px;">الأستاذ بشير حميد</span>
+        </div>
+        <div class="cert-card-box">
+            🏫 <b>المرحلة الدراسية:</b><br>
+            <span class="glass-pill" style="margin-top: 5px; font-size: 14px;">الصف الأول المتوسط</span>
+        </div>
+        <div class="cert-card-box">
+            📢 <b>قناة التلغرام التعليمية:</b><br>
+            <span class="glass-pill" style="margin-top: 5px; font-size: 14px; color: #0284c7;" dir="ltr">@sm_3rd</span>
+        </div>
+        <div class="cert-card-box">
+            📅 <b>تاريخ الإصدار:</b><br>
+            <span class="glass-pill" style="margin-top: 5px; font-size: 14px;">2026 / 10 / 22</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    // رابط Google Script الخاص بك
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydEvDl8t7ub34RFfOvbcL44auacq3LcN833cQIvqqf_Sxlu4-Cqmj7QTiFeJnhfAbD/exec";
+
+    const audioCorrect = new Audio("https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3");
+    const audioWrong = new Audio("https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3");
+    const audioCheer = new Audio("https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3");
+
+    // الأسئلة المحدثة لصف الأول المتوسط
+    const questions = [
+        {
+            q: "السؤال 1: في قوله تعالى: {قُلْ هُوَ اللَّهُ أَحَدٌ}، تُعد كلمة \"قُلْ\":",
+            options: ["أ) اسماً", "ب) فعلاً", "ج) حرفاً", "د) ظرفاً"],
+            correct: 1
+        },
+        {
+            q: "السؤال 2: من أبرز علامات (الاسم) التي تميزه عن الفعل والحرف:",
+            options: ["أ) قبول دخول (قد)", "ب) قبول دخول (لم)", "ج) التنوين ودخول (أل) التعريف", "د) الاتصال بتاء الفاعل"],
+            correct: 2
+        },
+        {
+            q: "السؤال 3: في قوله تعالى: {فِي جَنَّاتٍ وَنَهَرٍ}، ما علامة الاسم في كلمتي (جَنَّاتٍ) و(نَهَرٍ)؟",
+            options: ["أ) دخول \"أل\" التعريف", "ب) التنوين ودخول حرف الجر", "ج) الإضافة", "د) التاء المربوطة"],
+            correct: 1
+        },
+        {
+            q: "السؤال 4: قال الشاعر: \"الخيلُ والليلُ والبيداءُ تعرفني...\"، علامة الاسم في الكلمات (الخيل، الليل، البيداء) هي:",
+            options: ["أ) التنوين", "ب) دخول حرف الجر", "ج) دخول (أل) التعريف", "د) مجردة من العلامات"],
+            correct: 2
+        },
+        {
+            q: "السؤال 5: أي من الكلمات الآتية لا تُعد اسماً أبداً؟",
+            options: ["أ) بَغدادُ", "ب) سَيَكْتُبُ", "ج) شَجَرَةٌ", "د) كِتَابٌ"],
+            correct: 1
+        },
+        {
+            q: "السؤال 6: دخول حروف الجر (من، إلى، عن، على...) يختص بالدخول على:",
+            options: ["أ) الأفعال الماضية", "ب) الأفعال المضارعة", "ج) الأسماء", "د) الحروف"],
+            correct: 2
+        },
+        {
+            q: "السؤال 7: الحرف في أقسام الكلام يُعرّف بأنه:",
+            options: ["أ) ما دل على معنى في نفسه", "ب) ما دل على حدث مقترن بزمن", "ج) ما لا يكتمل معناه إلا مع غيره (في جملة)", "د) ما يقبل التنوين دائماً"],
+            correct: 2
+        },
+        {
+            q: "السؤال 8: قال الشاعر: \"السَّيفُ أَصدَقُ أَنباءً مِنَ الكُتُبِ...\"، علامة الاسم في كلمة \"الكتبِ\":",
+            options: ["أ) التنوين", "ب) دخول حرف الجر و(أل) التعريف", "ج) الإضافة", "د) التنوين المكسور"],
+            correct: 1
+        },
+        {
+            q: "السؤال 9: كلمة \"طالبٌ\"، علامتها على أنها اسم هي:",
+            options: ["أ) التنوين", "ب) دخول حرف الجر", "ج) (أل) التعريف", "د) قبول (سوف)"],
+            correct: 0
+        },
+        {
+            q: "السؤال 10: من أبرز علامات الفعل الماضي التي تميزه عن غيره:",
+            options: ["أ) قبول تاء التأنيث الساكنة وتاء الفاعل", "ب) قبول (السين) و(سوف)", "ج) قبول حرف الجزم (لم)", "د) البدء بأحرف \"أنيت\""],
+            correct: 0
+        }
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+    let studentName = "";
+    let timerInterval = null;
+    let timeLeft = 600;
+    let userAnswers = [];
+
+    function startQuiz() {
+        studentName = document.getElementById("student-name").value.trim();
+        if (!studentName) {
+            alert("يرجى كتابة اسمك الثلاثي لتبدأ الاختبار!");
+            return;
+        }
+        document.getElementById("screen-start").classList.remove("active");
+        document.getElementById("screen-quiz").classList.add("active");
+        startTimer();
+        loadQuestion();
+    }
+
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById("timer-display").innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                finishQuiz();
+            }
+        }, 1000);
+    }
+
+    function loadQuestion() {
+        let qData = questions[currentQ];
+        document.getElementById("q-num").innerText = currentQ + 1;
+        document.getElementById("q-text").innerText = qData.q;
+
+        let optionsContainer = document.getElementById("options-container");
+        optionsContainer.innerHTML = "";
+
+        qData.options.forEach((opt, idx) => {
+            let btn = document.createElement("button");
+            btn.className = "option-btn";
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(idx, btn);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(idx, btn) {
+        let allBtns = document.querySelectorAll(".option-btn");
+        allBtns.forEach(b => b.style.pointerEvents = "none");
+
+        userAnswers.push(idx);
+
+        let isCorrect = (idx === questions[currentQ].correct);
+
+        if (isCorrect) {
+            score++;
+            btn.classList.add("correct-choice");
+            audioCorrect.play();
+            
+            confetti({
+                particleCount: 80,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        } else {
+            btn.classList.add("wrong-choice");
+            audioWrong.play();
+        }
+
+        setTimeout(() => {
+            currentQ++;
+            if (currentQ < questions.length) {
+                loadQuestion();
+            } else {
+                clearInterval(timerInterval);
+                finishQuiz();
+            }
+        }, 2000);
+    }
+
+    function finishQuiz() {
+        document.getElementById("screen-quiz").classList.remove("active");
+        document.getElementById("screen-result").classList.add("active");
+
+        document.getElementById("final-score").innerText = score;
+        let msgBox = document.getElementById("result-message");
+        let evalText = "";
+
+        if (score === 10) {
+            evalText = "ممتاز أيها العبقري الصغير 🌟🏆";
+            msgBox.style.color = "#2563eb";
+            msgBox.innerText = evalText;
+            document.getElementById("cert-btn-container").style.display = "block";
+
+            audioCheer.play();
+            setTimeout(() => {
+                audioCheer.pause();
+                audioCheer.currentTime = 0;
+            }, 4000);
+
+            confetti({
+                particleCount: 180,
+                spread: 100,
+                origin: { y: 0.4 }
+            });
+
+        } else if (score === 9) {
+            evalText = "ممتاز 👏";
+            msgBox.style.color = "#0284c7";
+            msgBox.innerText = evalText;
+        } else if (score === 8) {
+            evalText = "أحسنت درجة جيدة 👍";
+            msgBox.style.color = "#d97706";
+            msgBox.innerText = evalText;
+        } else if (score <= 4) {
+            evalText = "لقد فشلت في الاختبار حاول لاحقًا ❌";
+            msgBox.style.color = "#dc2626";
+            msgBox.innerText = evalText;
+        } else {
+            evalText = "محاولة جيدة، يمكنك التطور أكثر!";
+            msgBox.style.color = "#d97706";
+            msgBox.innerText = evalText;
+        }
+
+        // إرسال النتيجة إلى Google Sheets تلقائياً
+        sendDataToGoogleSheet(studentName, "الصف الأول المتوسط", `${score} / 10`, evalText);
+    }
+
+    function sendDataToGoogleSheet(name, sClass, finalScore, evaluation) {
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                studentName: name,
+                studentClass: sClass,
+                score: finalScore,
+                evaluation: evaluation
+            })
+        }).catch(error => console.error('Error sending data:', error));
+    }
+
+    function openReview() {
+        document.getElementById("screen-result").classList.remove("active");
+        document.getElementById("screen-review").classList.add("active");
+
+        let reviewList = document.getElementById("review-list");
+        reviewList.innerHTML = "";
+
+        questions.forEach((q, qIdx) => {
+            let userAnsIdx = userAnswers[qIdx];
+            let card = document.createElement("div");
+            card.className = "review-card";
+
+            let html = `<div class="review-q-title">${q.q}</div>`;
+            q.options.forEach((opt, optIdx) => {
+                let statusClass = "";
+                if (optIdx === q.correct) {
+                    statusClass = "review-opt correct-ans";
+                } else if (optIdx === userAnsIdx && userAnsIdx !== q.correct) {
+                    statusClass = "review-opt user-wrong";
+                } else {
+                    statusClass = "review-opt";
+                }
+                html += `<div class="${statusClass}">${opt} ${optIdx === q.correct ? '✔ (الحل الصحيح)' : ''} ${optIdx === userAnsIdx && userAnsIdx !== q.correct ? '✖ (إجابتك)' : ''}</div>`;
+            });
+
+            card.innerHTML = html;
+            reviewList.appendChild(card);
+        });
+    }
+
+    function backToResult() {
+        document.getElementById("screen-review").classList.remove("active");
+        document.getElementById("screen-result").classList.add("active");
+    }
+
+    function downloadCert() {
+        document.getElementById("cert-student-name").innerText = studentName;
+        let element = document.getElementById("certificate");
+        element.style.display = "block";
+
+        let opt = {
+            margin: 0.3,
+            filename: `شهادة_تفوق_${studentName}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            element.style.display = "none";
+        });
+    }
+</script>
+
+</body>
+</html>
